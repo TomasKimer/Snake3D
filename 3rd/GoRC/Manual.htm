@@ -1,0 +1,2618 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Author's own Paws - see www.GoDevTool.com">
+   <meta name="keywords" content="Win32, GoRC, resource compiler, Windows, programming, compiler, tools">
+   <title>Resource compiler Manual</title>
+   <!--Copyright Jeremy Gordon 1997-2003-->
+   <style>
+   <!--
+   A {color: #0000FF; font: bold 10pt times}
+   A:Visited {color: #0000FF}
+   A:Hover {color: #009900}
+   -->
+   </style>
+</head>
+<body>
+<b><font size="+6">Resource Compiler Manual</font></b>
+<br>
+<br>
+<a NAME="top"></a>
+<p><font size="+1"><font color="000000">by Jeremy Gordon</font></font>
+<br><img SRC="mail6sblue.gif" height=13 width=93 align="top" vspace="5">
+<br><img SRC="GoLogo50.gif" height=22 width=50>
+<font size="+1"><font color="000000">A "Go" development tool:</font></font>
+<br><a href="http://www.GoDevTool.com"><font size="+1"><font color="000000">see http://www.GoDevTool.com</font></font></a>
+<p>
+<a href="#int">Introduction</a>
+<font size="-1">
+<br><a href="#start">Starting the Resource Compiler</a>
+<br><a href="#dir">Directives (eg. #define,#if,#include)</a>
+<br><a href="#other">Other symbols</a>
+<br><a href="#num">Numbers</a>
+<br><a href="#arith">Arithmetic</a>
+<br><a href="#string">Strings and String Manipulation</a>
+<br><a href="#char">Windows character set</a>
+<br><a href="#raw">Raw data resources (eg. cursor,bitmap,RCDATA etc)</a>
+<br><a href="#ste">Stringtable resource</a>
+<br><a href="#ver">Versioninfo resource</a>
+<br><a href="#acc">Accelerators resource</a>
+<br><a href="#men">Menu resource</a>
+<br><a href="#dia">Dialog resource</a>
+<br><a href="#verc">Version and characteristics</a>
+<br><a href="#lang">Language</a>
+<br><a href="#cap">Capitalisation of nameIDs and types</a>
+<br><a href="#legal">Legal stuff</a>
+</font>
+
+<br>
+<p><a NAME="int"></a><b><font size="+3">Introduction</font></b>
+<p>This document assumes that the reader has some knowledge
+of resources, what they are and how they work.
+<p>This document is intended for use with the GoRC resource
+compiler. There are some slight differences in the permitted syntax between
+the Microsoft Resource compiler and GoRC. In general GoRC is slightly more
+flexible in its syntax.
+<p>The Resource Compiler works with files which have the
+RC extension and which contain text without formatting codes, other than
+carriage return, linefeed or tabs, such as produced by most simple text
+editors. More sophisticated word processors can also produce such files
+if they are instructed to produce TXT files, ASCII or ANSI files. 
+<p>The resource script and include files can be in Unicode format.  If so,
+GoRC expects a Byte Order Mark (BOM).  GoRC can read the UTF-8 Unicode format
+with BOM, or the UTF-16LE Unicode format with BOM.
+<p>GoRC can make
+two types of <i>binary resource files</i> from a resource script. It can
+make an OBJ file in COFF format, which is suitable for linking with other
+OBJ files to produce the final EXE or DLL. It can also produce a RES file,
+which is an intermediate file in binary format. GoRC can also convert a
+RES file to an OBJ file.
+<p>Here are the syntax rules which are used in this reference:-
+<p>Normal text shows words as they actually appear in your
+source code.
+<br><i>Italic text describes only the type of entry in your
+source code- look for the description to see what can be put there.</i>
+<br>[Text in square brackets means that the material is optional].
+<br>
+<br>
+<br>
+<br>
+<p><a NAME="start"></a><b><font size="+3">Starting the Resource Compiler</font></b>
+<br><a href="#top">Back to top</a>
+<p>The command line syntax is:-
+<p>GoRC [command line switches] <i>filename</i>[.<i>ext</i>]
+<p>Where,
+<p><i>filename </i>is the name of the resource script
+<p><b>Command-line Switches</b>
+<br>/h or /? help
+<br>/d define a word
+<br>/o create OBJ file
+<br>/r create RES file
+<br>/fo specify output file
+<br>/ni no information messages
+<br>/ne no error messages
+<br>/nw no warning messages
+<br>/no no output messages at all
+<p><b>Input and Output files</b>
+<br>The default action of GoRC is <b>RC > RES and OBJ</b>
+<br>If no extension is given in the command line and GoRC
+cannot find <i>filename</i>.RC then it looks for <i>filename</i>.RES. If
+found, this results in the action<b> RES > OBJ.</b>
+<p>The default action can be overridden to achieve <b>RC
+> RES </b>in the following ways:-
+<ul>
+<li>
+Specifying a RES output file using the /r switch</li>
+
+<li>
+Using the /fo switch and giving a filename with the RES extension</li>
+</ul>
+The default action can be overridden to achieve <b>RC > OBJ
+</b>in the following ways:-
+<ul>
+<li>
+Specifying an OBJ output file using the /o switch</li>
+</ul>
+Using the /fo switch and giving a filename with the OBJ extension
+<p>You can ensure the action is <b>RES > OBJ</b> by giving
+the input file with the extension RES.
+<p>By default, the output filenames will be the same as those
+of the input file, but you can use the /fo switch to change this. This
+is used as follows:-
+<ul>
+<li>
+use /fo <i>filename</i> to make the output files <i>filename</i>.OBJ
+and <i>filename</i>.RES</li>
+
+<li>
+use /fo <i>filename</i>.OBJ to make the output file <i>filename</i>.OBJ;
+the RES output file will have the same name as the input file</li>
+
+<li>
+use /fo <i>filename</i>.RES to make the output file <i>filename</i>.RES;
+the OBJ output file will have the same name as the input file</li>
+
+<li>
+use /fo <i>filename1</i>.RES, <i>filename2</i>.OBJ to make
+output files matching the specified filenames; here two filenames are separated
+by a comma</li>
+</ul>
+By default, the output files will be placed in the same directory
+as the input file. You can specify a full path for the output files when
+using the /fo switch.
+<br>You can enclose the filenames in quotes to permit the use of filenames
+with spaces and other unusual characters.
+<p>GoRC can work with Unicode input and output filenames, but the extensions
+used must be as set out above.
+
+<p><b>Errors and Warnings</b>
+<br>Errors will cause the Resource Compiler to stop and no
+output files will be made. The console then shows the nature of the error
+and where it occurred. (unless the command line switch /ne has been specified).
+The Resource Compiler will also return with a code of 1, which will be
+likely to halt the build process if you are using a make file.
+<p>Warnings do not stop the Resource Compiler. A warning
+will be given (unless the command line switch /nw has been specified) if:-
+<ul>
+<li>
+An expression could not be evaluated when expecting an <i>identifier</i>.
+In this instance the Resource Compiler treats the expression as being an
+ID with a name. However this may not be your intention, if, for example
+you thought you had provided a #define directive for the expression.</li>
+
+<li>
+An expression could not be evaluated when expecting a resource
+<i>type</i>. In this instance the Resource Compiler treats the expression
+as defining a resource, that is, a <i>user-defined resource</i>. Again
+this may not be your intention, so a warning is given.</li>
+
+<li>
+No resources are found in the resource file. In this case
+no output file is made.</li>
+</ul>
+A warning will also be given if an expression has been defined
+more than once in the command line, resource script or in a non ".h" include
+file. This is because it would be unusual to define an expression more
+than once and it may be that this is a programming error. It is perfectly
+permissible to cancel a previous definition using #undef so that the expression
+can be redefined. In that case no warning is given. Also, because the Resource
+Compiler does not always need to look into ".h" files to evaluate an expression,
+and because it is presumed that such ".h" files ought to be free of such
+errors, no check of previous definitions in header files is carried out.
+<br>
+<br>
+<br>
+<br>
+<p><a NAME="dir"></a><font size="+3"><b>Directives</font></b>
+<br><a href="#top">Back to top</a>
+<p>Directives are words in the resource script which give
+instructions to the Resource Compiler.
+<p>There are 3 types of directives:-
+<dir>
+<dir>Defining directives
+<br>Include directive
+<br>Conditional directives
+<br>
+<br></dir>
+</dir>
+<b><h3>The Defining Directives</h3></b>
+<p><b>Evaluating types</b>
+<br>These are #define macros which evaluate to a number or
+to a quoted string
+<p>#define <i>name value</i>
+<dir>
+<dir>From this point when <i>name </i>is encountered in the
+resource script it is replaced by <i>value</i>
+<p><b><u>Examples</u></b>
+<p><font face="Courier New"><font size="-1">#define IDC_BUTTON 0x20
+<br>#define DLGCONTROL 0x20 | 0x40
+<br>#define DLGTEXT "Hello world"
+<br>#define OTHER DLGCONTROL + IDC_BUTTON
+<br>#define WINNT</font></font>
+<br><i>(this sets the name WINNT to a value of 1, that is, TRUE)</i>
+<br>
+<br></dir>
+</dir>
+<b>The RC compiler automatically defines RC_INVOKED, so that you can use
+the conditional directives to skip over unwanted resource script text</b>
+<dir>
+<dir><b><u>Example</u></b>
+<br><font face="Courier New"><font size="-1">#ifndef RC_INVOKED
+<br><i>skipped text</i>
+<br>#endif</font></font>
+<br>
+<br>
+<p><b>You can define a <i>name</i> from the command line:-</b>
+<p><b><u>Examples</u></b>
+<br><font face="Courier New"><font size="-1">GoRC /d WINVER=400h mainres</font></font>
+<br><i>This compiles the resource script mainres, on the basis
+that WINVER is equal to hex 400 throughout.</i>
+<p><font face="Courier New"><font size="-1">GoRC /d WINNT mainres</font></font>
+<br><i>This compiles the resource script mainres, on the basis
+that WINNT has the value of 1 (that is, TRUE)</i>
+<p><font face="Courier New"><font size="-1">GoRC /d WINNT=55h /d good=0x44
+mainres</font></font>
+<br><i>Example of more than one definition.</i>
+<p><font face="Courier New"><font size="-1">GoRC /d WINNT=330, good=0x44
+mainres</font></font>
+<br><i>Example of more than one definition using comma.</i>
+<br>
+<br></dir>
+</dir>
+#undef <i>name</i>
+<dir><dir>From this point in the resource script any earlier value for the
+name given by a #define is no longer used
+<p><b><u>Examples</u></b>
+<br><font face="Courier New"><font size="-1">#undef IDC_BUTTON
+<br>#undef DLGCONTROL</font></font>
+<br>
+<br></dir>
+</dir>
+<b>Non evaluating types</b>
+<br>These are #define macros which do not evaluate to a single
+result
+<p>#define <i>name value1 value2 value3 ……</i>
+<dir>
+<dir>From this point when <i>name </i>is encountered in the
+resource script it is replaced by <i>value1 value2 value3</i>
+<b><u>Example</u></b>
+<br><font face="Courier New"><font size="-1">#define GRASSHOPPER Deep Influences On Us
+<br>#define FILENAME README
+<br>#define EXTENSION TXT
+<br>FILENAME.EXTENSION <i>(becomes README.TXT)</i></font></font>
+<br>
+<br></dir>
+</dir>
+<b>Macros with arguments</b>
+<br>These are #define macros which use the arguments supplied
+when the macro is used
+<p>Syntax for the macro in which the arguments are declared:-
+<br>#define &nbsp;<i>name(arg1,arg2,arg3….) &nbsp;&nbsp;use of arguments</i>
+<br>Syntax to supply the arguments:-
+<br><i>name(arg1,arg2,arg3….)</i>
+<p><dir><dir><b><u>Examples</u></b>
+<br><font face="Courier New"><font size="-1">#define NIM($a,$b) $a+$b
+<br>NIM(23,45)
+<br>(result is 68)</i>
+<br>#define NIMROD($a,$b) #$a
+<br>NIMROD (HANG,OVER)</font></font>
+<br><i>(result is "hang")</i>
+<br>
+<br></dir>
+</dir>
+Note that the number of arguments which are <i>supplied</i>
+must exactly match the number of arguments <i>declared</i>, but they need
+not all be <i>used</i>. When an argument is <i>declared</i> there must
+be no space between the macro name and the arguments, but there can be
+spaces when the argument is <i>supplied</i> or <i>used.</i>
+<p>
+<p><b><h3>The Include Directive</h3></b>
+#include <i>path\filename</i>
+<p>This will cause the Resource Compiler to load and look
+at the specified file if necessary.
+<p><i>path\filename </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a quoted string
+<br>a non-quoted string
+<br>a string in less-than and greater-than characters</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+The Resource Compiler will look for the file using the path
+specified. If no path is specified it will look in the current directory.
+If the file is not found it will look for it in the path given by the INCLUDE
+environment string. You can set the INCLUDE environment string using the
+SET command in the MSDOS window, or by calling the SetEnvironmentVariable
+API.
+<p>To the Resource Compiler there are two types of #include
+files.
+<p>There are "header" files, with the file extension ".h".
+These files are not treated as part of the resource script, but are regarded
+only as containing defining directives. This enables the Resource Compiler
+to work more quickly because it will not bother to search an ".h" file
+unless it has an expression which it is trying to evaluate. Any ordinary
+resource script statements in an ".h" file will be ignored by the Resource
+Compiler.
+<p>Note that the Resource Compiler is itself aware of most
+if not all of the usual styles and expressions used in a resource script.
+For this reason it will not normally be necessary to include any header
+files. However you will need to define your own expressions and identifiers
+if you wish to use those.
+<p>The second type of #include files are non ".h" files.
+These are treated as part of the resource script itself by the Resource
+Compiler. When an #include directive if found for a non ".h" file, the
+Resource Compiler will divert its attention to the #include file and when
+it has finished looking at that file it will return to the original script
+where it left off.
+<p>You can nest #include files but it is probably good practice
+to avoid this as far as possible.
+<p><b>Definition Priority</b>
+<br>A #define directive in an ".h" include file is regarded
+as of lower priority than a #define directive in the command line, resource
+script or in a non ".h" include file. Therefore if there is any conflict
+between the #defines, the #define in the ".h" include file will be ignored.
+<br>
+<br>
+<p><h3>The Conditional Directives</h3>
+<p>With these directives you can select at compile-time that
+part of the resource script or of the defining directives which you want
+to be compiled. This may be useful if, for example, you want to make different
+versions of your program from the same resource script.
+<p>The syntax of the basic structure of a conditional directive
+in its simplest form is as follows:-
+<p>#if <i>condition</i>
+<br>text A
+<br>#endif
+<p>Here if the <i>condition</i> is TRUE text A will be compiled.
+If, however, the <i>condition</i> is FALSE, the compiler will jump over
+text A and will continue compiling from the #endif.
+<p>You can add something to do if the condition is FALSE
+as follows:-
+<p>#if <i>condition</i>
+<br>text A
+<br>#else
+<br>text B
+<br>#endif
+<p>Here if the <i>condition</i> is TRUE, text A will be compiled,
+but text B will not be compiled.
+<p>If, however, the <i>condition</i> is FALSE, text A will
+be jumped over but text B will be compiled.
+<p>The #endif indicates the end of the conditional frame,
+so that all text after that will be compiled.
+<p>The #else statement must always be next before the #endif.
+<p>You can add a further condition to the frame:-
+<p>#if <i>condition1</i>
+<br>text A
+<br>#elif <i>condition2</i>
+<br>text B
+<br>#endif
+<p>Here if <i>condition1</i> is TRUE, text A will be compiled,
+but text B will be jumped over and compilation will continue from the #endif.
+If, however, <i>condition1</i> is FALSE, text A will be jumped over to
+the #elif when condition2 will be tested. If then <i>condition2</i> is
+TRUE, text B will be compiled. "#elif" is the same as "#elseif".
+<p>Adding the #else to the above conditional frame produces:-
+<br>#if <i>condition1</i>
+<br>text A
+<br>#elif <i>condition2</i>
+<br>text B
+<br>#else
+<br>text C
+<br>#endif
+<p>Here if <i>condition1</i> is TRUE, text A will be compiled,
+but text B and text C will be jumped over and compilation will continue
+from the #endif. If, however, <i>condition1</i> is FALSE, text A will be
+jumped over to the #elif when condition2 will be tested. If then <i>condition2</i>
+is TRUE, text B will be compiled, and text C will be ignored; if, however
+<i>condition2</i> is FALSE text B will be jumped over to the #else and
+text C will be compiled.
+<p>You can have as many #elifs as you like in each conditional
+frame, but there can only be one #else per frame, and each #if must have
+a corresponding #endif. Some programmers nest the conditional frames, but
+this can become very confusing and may not be good programming practice.
+If this is done it is recommended that you label each #endif with a comment
+so that you can see to which #if it refers.
+<p><b><u>Types of #if statements</u></b>
+<p>#ifdef <i>expression</i>
+<dir>
+<dir>where expression is a word which may be defined in the
+resource script or in a header file. This statement returns TRUE if the
+expression is defined and FALSE if it is not defined. e<i>xpression</i>
+must be a word and not a number nor a quoted string.
+<br>
+<br></dir>
+</dir>
+#ifndef <i>expression</i>
+<dir>
+<dir>as above but this statement returns FALSE if the expression
+is defined and TRUE if it is not defined.
+<br>
+<br></dir>
+</dir>
+#if 0
+<dir>
+<dir>this statement always returns FALSE and so it can be
+used to jump over text which ought to be ignored
+<br>
+<br></dir>
+</dir>
+#if <i>expression1 relational-operator expression2</i>
+<dir>
+<dir><i>expression1</i> must be a word which is defined elsewhere
+in the file, in an include file or in the command line. It cannot be a
+number.
+<p>the <i>relational operator</i> can be one of the following:-
+<br>>= greater than or equals
+<br>&lt;= less than or equals
+<br>== equals
+<br>= equals
+<br>!= not equal
+<br>> greater than
+<br>&lt; less than
+<p><i>expression2</i> can be a number or a word which is
+defined elsewhere in the file, in an include file or in the command line,
+which evaluates to a number.
+<p>For example, #if WINVER>=400h
+<p>will return TRUE if WINVER is defined as 400h or more.
+<p>#if ! this reverses the result of the condition, so that
+(for example) #if!0 would return TRUE</dir>
+</dir>
+#if not same as #if !
+<br>
+<br>
+<p><a NAME="other"></a><b><font size="+3">Other symbols</font></b>
+<br><a href="#top">Back to top</a>
+<p>
+<p>These are some other symbols which may be used in the
+resource script or a header file and which have a special meaning to the
+Resource Compiler.
+<p>; or // a comment line - everything after this to the
+end of the line is ignored
+<br>;;......;; or
+<br>/*.........*/ a continuous comment - everything between
+the marks is ignored
+<br>\ (at the end of a line or just before a comment) -
+the material is continuing on the next line (cannot be used in quoted strings
+or filenames)
+<br>{<i> </i>same as BEGIN
+<br>}<i> </i>same as END
+<br><i>-number </i>means the number is negative eg. -22h if
+a dword becomes 0FFFFFFDEh
+<br><i>~number </i>means the number is inverted eg. ~22h if
+a dword becomes 0FFFFFFDDh
+<br><i>+ </i>plus eg. 22h + 3h produces 25h
+<br>-<i> </i>minus eg. 22h - 3h produces 1Fh
+<br>| or &brvbar; bitwise OR eg. 22h | 3h produces 23h
+<br>&amp; bitwise AND eg. 22h &amp; 3h produces 2h
+<br>!<i>value </i>in arithmetic this causes the value to be
+inverted and then ANDed with the existing and is the same minus <i>value</i>
+<br>NOT <i>value</i> same as above
+<p># in a #define macro, this causes quotes to be added to
+what follows
+<br>eg. #HELLO becomes "HELLO"
+<br>eg. #(MAJOR.MINOR) becomes "MAJOR.MINOR"
+<p>## in a #define macro, this joins two elements, removing
+all spaces in between
+<br>eg. PATCH ## WORK becomes PATCHWORK
+<p>(…..) in a #define macro the material within the parentheses
+is evaluated first
+<br>
+<br>
+<b><a NAME="num"></a><font size="+3">Numbers</font></b>
+<br><a href="#top">Back to top</a>
+<p>The Resource Compiler recognises the following types of
+numbers, for example:-
+<p>6666666h a hex number
+<br>3434343H a hex number
+<br>9999999D a decimal number
+<br>22553388d a decimal number
+<br>34567789 a decimal number
+<br>0x456789 a hex number
+<br>456L specifies the number is to be recorded as a dword
+where otherwise it would be a word
+<br>
+<br>
+<b><a NAME="arith"></a><font size="+3">Arithmetic</font></b>
+<br><a href="#top">Back to top</a>
+<p>The resource compiler can perform limited arithmetic on
+the following:-
+<p>identifiers, styles, flags and dialog and control positions
+and dimensions
+<br>defining directives
+<br>expressions in conditional directives
+<dir>
+<dir><b>Examples of arithmetic</b>
+<br><font face="Courier New"><font size="-1">66h+2h CURSOR first.cur
+<br>#define BELLS 200h | 22h + 1h
+<br>BELLS+1000h ICON icon1.ico
+<br>BELLS-1h ICON icon1.ico
+<br>STYLE WS_TABSTOP | WS_GROUP | WS_DISABLED
+<br>DIALOG 0x34+2,0x20,0x300-0x60,400-200</font></font>
+<br>
+<br></dir>
+</dir>
+The Resource Compiler cannot resolve more complex formulae
+involving for example logical operators, decimal points, multiplication
+or division.
+<br>
+<br>
+<p><b><a NAME="string"></a><font size="+3">Strings and String Manipulation</font></b>
+<br><a href="#top">Back to top</a>
+<p>Quoted strings in the stringtable resource and in all
+text for dialogs and menus must be kept in the binary resource files and
+in the EXE in Unicode.  If the resource script is an ANSI text file, however,
+the strings will be in ANSI characters. In that case the Resource Compiler 
+converts them to Unicode using the API MultiByteToWideChar. This API uses
+the current codepage for this conversion, so you need to ensure that at
+compile time your machine is set to use the same codepage as was used when
+the source script was made.
+<p>If the resource script is a Unicode file, then codepages are not used: 
+the strings are used as they appear in the resource script.
+<p>The strings are put in the RES file (or OBJ file) in Unicode whether or 
+not you use the "C" style Unicode indicator L"<i>string</i>". The Resource 
+Compiler regards the L"<i>string</i>" indicator as implicit for these types 
+of strings.
+So there is no need to use that indicator in your resource script (unless
+you want to insert special Unicode characters - see below).
+<p>There is no impicit L"<i>string</i>" indicator for quoted
+strings in the raw data resources (eg. RCDATA). 
+Therefore in an ANSI file such strings are not converted
+to Unicode unless L"<i>string</i>" is specified.
+<p>All quoted strings may contain <i>escape</i> sequences
+which are dealt with in a special way by the Resource Compiler:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>&amp; in menu title strings this causes the system at
+run-time to create an accelerator for the menu item using the character
+following the ampersand. If you need an ampersand include it twice eg.
+&amp;&amp;.
+<br>"""" Double-up the quotation marks to retain them. For
+example """Hello there""" will be kept as "Hello there" and "He said
+""Hello there"" quickly" will be kept as He said "Hello there" quickly.
+<br>"" an empty string (useful for example in static controls
+where the text is to be inserted during run-time later.
+<br>\t tab (converted to the 9h TAB character)
+<br>\a alert (converted to the 8h BELL character)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;(in menus this is used to align all the following text
+to the right)
+<br>\n new line (converted to the 0Ah LINEFEED character)
+<br>\r return (converted to the 0Dh CARRIAGE RETURN character)
+<br>\\ converted to one backslash only
+<br>\<i>number </i>see below
+<br>\<i>other </i>the backslash is regarded as an ordinary
+backslash
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<b>\<i>number</i> to produce
+a special character</b>
+<p>In all quoted strings which are converted by the Resource
+Compiler you can have:-
+<br>\<i>number</i>
+<br>This then will cause the character represented by <i>number</i>
+to be inserted in the text
+<br>For example, "Copyright \251 2002" inserts a &copy; symbol
+in the text.
+<br>Strange! The &copy; symbol, as everybody knows, is ANSI
+value 169, or A9 in hex.
+<p>However, the Resource Compiler uses <i>octal </i>numbers
+in this feature rather than decimal, ie. all digits are to base 8. Why?
+This is simply to provide compatibility with existing resource scripts.
+<p>Sometimes \<i>number</i> can look rather odd. For example
+"The entrance fee was \4423", is converted to "The entrance fee was $23".
+Here the Resource Compiler does not try to find character 442 octal or
+4423 octal because it knows that this value is too high. This works fine
+for characters above 38 octal, but for characters with values less than
+this, for example 12 octal which is the value 0Ah (linefeed) there could
+be confusion, for example "We found on average about\1223 flies in each
+of the soups". This should be written "We found on average about\01223
+flies in each of the soups". This is because the Resource Compiler will
+only look at 3 octal digits and no more, so it stops after the \012 (linefeed),
+and the value 23 is kept in the text properly. Of course you could use
+\n instead to ensure there is no chance of confusion and this would be
+better.
+<p><b>\<i>number</i> in hex rather
+than in octal</b>
+<p>You can also use hex values when entering \<i>number</i>,
+by including x after the backslash. For example the hex version "Copyright
+\xA9 2005" is the same as "Copyright \251 2005" which is the octal version.
+Again the Resource Compiler will not look beyond the second hex digit for
+the value, so ensure that where small values are used you insert the zero
+if there is any danger of confusion. For example in "The capacitor had
+a value of 3\xb5farads" the Resource Compiler does not take the hex number
+b5f, but looks only at b5 hex. However, in the string "It returned to Earth\x0aafter
+44 years with 5 more people on board", the zero is required to avoid using
+the hex number aa as the special character.
+<p><b>\<i>number</i> in Unicode strings</b>
+<p>The Resource Compiler looks at up to four hex digits in
+\<i>number</i> if the string is expressly declared to be a Unicode string.
+You can do this by using the "C"-style indicator L"<i>string</i>" for the
+string. So, for example to create a string for a dialog button which displays
+a Shekel you would use the following string:-
+<p>L"\x20AA"
+<p>This creates the Unicode special character 20AAh (the
+Shekel sign).
+<p>You would not need to do this if you used Unicode format files, since 
+you could display the Shekel normally and it would be coded properly by
+the Resource Compiler.
+<br>
+<br>
+<br>
+<a NAME="char"></a><h3><b>The Windows Character Set</b></h3>
+<a href="#top">Back to top</a>
+<p>The character set used when the string is written to the
+screen by the menu, dialog or other method, depends on which character
+set is in use in the computer running the EXE. For computers used in English
+this is usually the Windows Character Set. A table of octal values may
+be difficult to find so one is provided here on the next page for your
+use, and on the following page a table of hex values.
+<br>
+<br>
+<br>
+<br>
+<br>
+<center>
+<p><h3>The Windows Character Set and <i>octal</i> values</center></h3>
+
+<center><table BORDER WIDTH="600">
+<tr>
+<td>Space</td><td>!</td><td>"</td><td>#</td><td>$</td><td>%</td>
+<td>&amp;</td><td>'</td><td>(</td><td>)</td><td>*</td><td>+</td>
+<td>,</td><td>-</td>
+</tr>
+<tr>
+<td>40</td><td>41</td><td>42</td><td>43</td><td>44</td><td>45</td>
+<td>46</td><td>47</td><td>50</td><td>51</td><td>52</td><td>53</td>
+<td>54</td><td>55</td>
+</tr>
+<tr>
+<td>.</td><td>/</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td>
+<td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>:</td><td>;</td>
+</tr>
+<tr>
+<td>56</td><td>57</td><td>60</td><td>61</td><td>62</td><td>63</td>
+<td>64</td><td>65</td><td>66</td><td>67</td><td>70</td><td>71</td>
+<td>72</td><td>73</td>
+</tr>
+<tr>
+<td><</td><td>=</td><td>></td><td>?</td><td>@</td><td>A</td><td>B</td>
+<td>C</td><td>D</td><td>E</td><td>F</td><td>G</td><td>H</td><td>I</td>
+</tr>
+<tr>
+<td>74</td><td>75</td><td>76</td><td>77</td><td>100</td><td>101</td>
+<td>102</td><td>103</td><td>104</td><td>105</td><td>106</td><td>107</td>
+<td>110</td><td>111</td>
+</tr>
+<tr>
+<td>J</td><td>K</td><td>L</td><td>M</td><td>N</td><td>O</td><td>P</td>
+<td>Q</td><td>R</td><td>S</td><td>T</td><td>U</td><td>V</td><td>W</td>
+</tr>
+<tr>
+<td>112</td><td>113</td><td>114</td><td>115</td><td>116</td><td>117</td>
+<td>120</td><td>121</td><td>122</td><td>123</td><td>124</td><td>125</td>
+<td>126</td><td>127</td></tr>
+<tr>
+<td>X</td><td>Y</td><td>Z</td><td>[</td><td>\</td><td>]</td><td>^</td>
+<td>_</td><td>`</td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td>
+</tr>
+<tr>
+<td>130</td><td>131</td><td>132</td><td>133</td><td>134</td><td>135</td>
+<td>136</td><td>137</td><td>140</td><td>141</td><td>142</td><td>143</td>
+<td>144</td><td>145</td>
+</tr>
+<tr>
+<td>f</td><td>g</td><td>h</td><td>i</td><td>j</td><td>k</td><td>l</td>
+<td>m</td><td>n</td><td>o</td><td>p</td><td>q</td><td>r</td><td>s</td>
+</tr>
+<tr>
+<td>146</td><td>147</td><td>150</td><td>151</td><td>152</td><td>153</td>
+<td>154</td><td>155</td><td>156</td><td>157</td><td>160</td><td>161</td>
+<td>162</td><td>163</td>
+</tr>
+<tr>
+<td>t</td><td>u</td><td>v</td><td>w</td><td>x</td><td>y</td><td>z</td>
+<td>{</td><td>|</td><td>}</td><td>~</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td>164</td><td>165</td><td>166</td><td>167</td><td>170</td><td>171</td>
+<td>172</td><td>173</td><td>174</td><td>175</td><td>176</td><td>177</td>
+<td>200</td><td>201</td>
+</tr>
+<tr>
+<td>‚</td><td>ƒ</td><td>„</td><td>…</td><td>†</td><td>‡</td><td>ˆ</td>
+<td>‰</td><td>Š</td><td>‹</td><td>Œ</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td>202</td><td>203</td><td>204</td><td>205</td><td>206</td><td>207</td>
+<td>210</td><td>211</td><td>212</td><td>213</td><td>214</td><td>215</td>
+<td>216</td><td>217</td>
+</tr>
+<tr>
+<td></td><td>‘</td><td>’</td><td>&#147;</td><td>&#148;</td>
+<td>•</td><td>&#150;</td><td>&#151</td>
+<td>˜</td><td>&trade;</td><td>š</td><td>›</td><td>œ</td>
+<td></td>
+</tr>
+<tr>
+<td>220</td><td>221</td><td>222</td><td>223</td><td>224</td><td>225</td>
+<td>226</td><td>227</td><td>230</td><td>231</td><td>232</td><td>233</td>
+<td>234</td><td>235</td>
+</tr>
+<tr>
+<td></td><td>Ÿ</td><td></td><td>&iexcl;</td><td>&cent;</td><td>&pound;</td><td>&curren;</td>
+<td>&yen;</td><td>&brvbar;</td><td>&sect;</td><td>&uml;</td><td>&copy;</td>
+<td>&ordf;</td><td>&laquo;</td>
+</tr>
+<tr>
+<td>236</td><td>237</td><td>240</td><td>241</td><td>242</td><td>243</td>
+<td>244</td><td>245</td><td>246</td><td>247</td><td>250</td><td>251</td>
+<td>252</td><td>253</td>
+</tr>
+<tr>
+<td>&not;</td><td></td><td>&reg;</td><td>&macr;</td><td>&deg;</td>
+<td>&plusmn;</td><td>&sup2;</td><td>&sup3;</td><td>&acute;</td>
+<td>&micro;</td><td>&para;</td><td>&middot;</td><td>&cedil;</td>
+<td>&sup1;</td>
+</tr>
+<tr>
+<td>254</td><td>255</td><td>256</td><td>257</td><td>260</td>
+<td>261</td><td>262</td><td>263</td><td>264</td><td>265</td>
+<td>266</td><td>267</td><td>270</td><td>271</td>
+</tr>
+<tr>
+<td>&ordm;</td><td>&raquo;</td><td>&frac14;</td><td>&frac12;</td> 
+<td>&frac34;</td><td>&iquest;</td><td>&Agrave;</td><td>&Aacute;</td>
+<td>&Acirc;</td><td>&Atilde;</td><td>&Auml;</td><td>&Aring;</td>
+<td>&AElig;</td><td>&Ccedil;</td>
+</tr>
+<tr>
+<td>272</td><td>273</td><td>274</td><td>275</td><td>276</td><td>277</td>
+<td>300</td><td>301</td><td>302</td><td>303</td><td>304</td><td>305</td>
+<td>306</td><td>307</td>
+</tr>
+<tr>
+<td>&Egrave;</td><td>&Eacute;</td><td>&Ecirc;</td><td>&Euml;</td>
+<td>&Igrave;</td><td>&Iacute;</td><td>&Icirc;</td><td>&Iuml;</td>
+<td>&ETH;</td><td>&Ntilde;</td><td>&Ograve;</td><td>&Oacute;</td>
+<td>&Ocirc;</td><td>&Otilde;</td>
+</tr>
+<tr>
+<td>310</td><td>311</td><td>312</td><td>313</td><td>314</td><td>315</td>
+<td>316</td><td>317</td><td>320</td><td>321</td><td>322</td><td>323</td>
+<td>324</td><td>325</td>
+</tr>
+<tr>
+<td>&Ouml;</td><td>&times;</td><td>&Oslash;</td><td>&Ugrave;</td> 
+<td>&Uacute;</td><td>&Ucirc;</td><td>&Uuml;</td><td>&Yacute;</td> 
+<td>&THORN;</td><td>&szlig;</td><td>&agrave;</td><td>&aacute;</td> 
+<td>&acirc;</td><td>&atilde;</td>
+</tr>
+<tr>
+<td>326</td><td>327</td><td>330</td><td>331</td><td>332</td><td>333</td>
+<td>334</td><td>335</td><td>336</td><td>337</td><td>340</td><td>341</td>
+<td>342</td><td>343</td>
+</tr>
+<tr>
+<td>&auml;</td><td>&aring;</td><td>&aelig;</td><td>&ccedil;</td> 
+<td>&egrave;</td><td>&eacute;</td><td>&ecirc;</td><td>&euml;</td> 
+<td>&igrave;</td><td>&iacute;</td><td>&icirc;</td><td>&iuml;</td> 
+<td>&eth;</td><td>&ntilde;</td>
+</tr>
+<tr>
+<td>344</td><td>345</td><td>346</td><td>347</td><td>350</td>
+<td>351</td><td>352</td><td>353</td><td>354</td><td>355</td>
+<td>356</td><td>357</td><td>360</td><td>361</td>
+</tr>
+<tr>
+<td>&ograve;</td><td>&oacute;</td><td>&ocirc;</td><td>&otilde;</td> 
+<td>&ouml;</td><td>&divide;</td><td>&oslash;</td><td>&ugrave;</td> 
+<td>&uacute;</td><td>&ucirc;</td><td>&uuml;</td><td>&yacute;</td> 
+<td>&thorn;</td><td>&yuml;</td>
+</tr>
+<tr>
+<td>362</td><td>363</td><td>364</td><td>365</td><td>366</td><td>367</td>
+<td>370</td><td>371</td><td>372</td><td>373</td><td>374</td><td>375</td>
+<td>376</td><td>377</td>
+</tr>
+</table></center>
+<p>
+<center>
+<p><h3>The Windows Character Set and <i>hex</i> values</center></h3>
+
+<center><table BORDER WIDTH="600">
+<tr>
+<td>Space</td><td>!</td><td>"</td><td>#</td><td>$</td><td>%</td>
+<td>&amp;</td><td>'</td><td>(</td><td>)</td><td>*</td><td>+</td>
+<td>,</td><td>-</td>
+</tr>
+<tr>
+<td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td>
+<td>26</td><td>27</td><td>28</td><td>29</td><td>2A</td><td>2B</td>
+<td>2C</td><td>2D</td>
+</tr>
+<tr>
+<td>.</td><td>/</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td>
+<td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>:</td><td>;</td>
+</tr>
+<tr>
+<td>2E</td><td>2F</td><td>30</td><td>31</td><td>32</td><td>33</td>
+<td>34</td><td>35</td><td>36</td><td>37</td><td>38</td><td>39</td>
+<td>3A</td><td>3B</td>
+</tr>
+<tr>
+<td><</td><td>=</td><td>></td><td>?</td><td>@</td><td>A</td><td>B</td>
+<td>C</td><td>D</td><td>E</td><td>F</td><td>G</td><td>H</td><td>I</td>
+</tr>
+<tr>
+<td>3C</td><td>3D</td><td>3E</td><td>3F</td><td>40</td><td>41</td>
+<td>42</td><td>43</td><td>44</td><td>45</td><td>46</td><td>47</td>
+<td>48</td><td>49</td>
+</tr>
+<tr>
+<td>J</td><td>K</td><td>L</td><td>M</td><td>N</td><td>O</td><td>P</td>
+<td>Q</td><td>R</td><td>S</td><td>T</td><td>U</td><td>V</td><td>W</td>
+</tr>
+<tr>
+<td>4A</td><td>4B</td><td>4C</td><td>4D</td><td>4E</td><td>4F</td>
+<td>50</td><td>51</td><td>52</td><td>53</td><td>54</td><td>55</td>
+<td>56</td><td>57</td></tr>
+<tr>
+<td>X</td><td>Y</td><td>Z</td><td>[</td><td>\</td><td>]</td><td>^</td>
+<td>_</td><td>`</td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td>
+</tr>
+<tr>
+<td>58</td><td>59</td><td>5A</td><td>5B</td><td>5C</td><td>5D</td>
+<td>5E</td><td>5F</td><td>60</td><td>61</td><td>62</td><td>63</td>
+<td>64</td><td>65</td>
+</tr>
+<tr>
+<td>f</td><td>g</td><td>h</td><td>i</td><td>j</td><td>k</td><td>l</td>
+<td>m</td><td>n</td><td>o</td><td>p</td><td>q</td><td>r</td><td>s</td>
+</tr>
+<tr>
+<td>66</td><td>67</td><td>68</td><td>69</td><td>6A</td><td>6B</td>
+<td>6C</td><td>6D</td><td>6E</td><td>6F</td><td>70</td><td>71</td>
+<td>72</td><td>73</td>
+</tr>
+<tr>
+<td>t</td><td>u</td><td>v</td><td>w</td><td>x</td><td>y</td><td>z</td>
+<td>{</td><td>|</td><td>}</td><td>~</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td>74</td><td>75</td><td>76</td><td>77</td><td>78</td><td>79</td>
+<td>7A</td><td>7B</td><td>7C</td><td>7D</td><td>7E</td><td>7F</td>
+<td>80</td><td>81</td>
+</tr>
+<tr>
+<td>‚</td><td>ƒ</td><td>„</td><td>…</td><td>†</td><td>‡</td><td>ˆ</td>
+<td>‰</td><td>Š</td><td>‹</td><td>Œ</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td>82</td><td>83</td><td>84</td><td>85</td><td>86</td><td>87</td>
+<td>88</td><td>89</td><td>8A</td><td>8B</td><td>8C</td><td>8D</td>
+<td>8E</td><td>8F</td>
+</tr>
+<tr>
+<td></td><td>‘</td><td>’</td><td>&#147;</td><td>&#148;</td>
+<td>•</td><td>&#150;</td><td>&#151</td>
+<td>˜</td><td>&trade;</td><td>š</td><td>›</td><td>œ</td>
+<td></td>
+</tr>
+<tr>
+<td>90</td><td>91</td><td>92</td><td>93</td><td>94</td><td>95</td>
+<td>96</td><td>97</td><td>98</td><td>99</td><td>9A</td><td>9B</td>
+<td>9C</td><td>9D</td>
+</tr>
+<tr>
+<td></td><td>Ÿ</td><td></td><td>&iexcl;</td><td>&cent;</td><td>&pound;</td><td>&curren;</td>
+<td>&yen;</td><td>&brvbar;</td><td>&sect;</td><td>&uml;</td><td>&copy;</td>
+<td>&ordf;</td><td>&laquo;</td>
+</tr>
+<tr>
+<td>9E</td><td>9F</td><td>A0</td><td>A1</td><td>A2</td><td>A3</td>
+<td>A4</td><td>A5</td><td>A6</td><td>A7</td><td>A8</td><td>A9</td>
+<td>AA</td><td>AB</td>
+</tr>
+<tr>
+<td>&not;</td><td></td><td>&reg;</td><td>&macr;</td><td>&deg;</td>
+<td>&plusmn;</td><td>&sup2;</td><td>&sup3;</td><td>&acute;</td>
+<td>&micro;</td><td>&para;</td><td>&middot;</td><td>&cedil;</td>
+<td>&sup1;</td>
+</tr>
+<tr>
+<td>AC</td><td>AD</td><td>AE</td><td>AF</td><td>B0</td>
+<td>B1</td><td>B2</td><td>B3</td><td>B4</td><td>B5</td>
+<td>B6</td><td>B7</td><td>B8</td><td>B9</td>
+</tr>
+<tr>
+<td>&ordm;</td><td>&raquo;</td><td>&frac14;</td><td>&frac12;</td> 
+<td>&frac34;</td><td>&iquest;</td><td>&Agrave;</td><td>&Aacute;</td>
+<td>&Acirc;</td><td>&Atilde;</td><td>&Auml;</td><td>&Aring;</td>
+<td>&AElig;</td><td>&Ccedil;</td>
+</tr>
+<tr>
+<td>BA</td><td>BB</td><td>BC</td><td>BD</td><td>BE</td><td>BF</td>
+<td>C0</td><td>C1</td><td>C2</td><td>C3</td><td>C4</td><td>C5</td>
+<td>C6</td><td>C7</td>
+</tr>
+<tr>
+<td>&Egrave;</td><td>&Eacute;</td><td>&Ecirc;</td><td>&Euml;</td>
+<td>&Igrave;</td><td>&Iacute;</td><td>&Icirc;</td><td>&Iuml;</td>
+<td>&ETH;</td><td>&Ntilde;</td><td>&Ograve;</td><td>&Oacute;</td>
+<td>&Ocirc;</td><td>&Otilde;</td>
+</tr>
+<tr>
+<td>C8</td><td>C9</td><td>CA</td><td>CB</td><td>CC</td><td>CD</td>
+<td>CE</td><td>CF</td><td>D0</td><td>D1</td><td>D2</td><td>D3</td>
+<td>D4</td><td>D5</td>
+</tr>
+<tr>
+<td>&Ouml;</td><td>&times;</td><td>&Oslash;</td><td>&Ugrave;</td> 
+<td>&Uacute;</td><td>&Ucirc;</td><td>&Uuml;</td><td>&Yacute;</td> 
+<td>&THORN;</td><td>&szlig;</td><td>&agrave;</td><td>&aacute;</td> 
+<td>&acirc;</td><td>&atilde;</td>
+</tr>
+<tr>
+<td>D6</td><td>D7</td><td>D8</td><td>D9</td><td>DA</td><td>DB</td>
+<td>DC</td><td>DD</td><td>DE</td><td>DF</td><td>E0</td><td>E1</td>
+<td>E2</td><td>E3</td>
+</tr>
+<tr>
+<td>&auml;</td><td>&aring;</td><td>&aelig;</td><td>&ccedil;</td> 
+<td>&egrave;</td><td>&eacute;</td><td>&ecirc;</td><td>&euml;</td> 
+<td>&igrave;</td><td>&iacute;</td><td>&icirc;</td><td>&iuml;</td> 
+<td>&eth;</td><td>&ntilde;</td>
+</tr>
+<tr>
+<td>E4</td><td>E5</td><td>E6</td><td>E7</td><td>E8</td>
+<td>E9</td><td>EA</td><td>EB</td><td>EC</td><td>ED</td>
+<td>EE</td><td>EF</td><td>F0</td><td>F1</td>
+</tr>
+<tr>
+<td>&ograve;</td><td>&oacute;</td><td>&ocirc;</td><td>&otilde;</td> 
+<td>&ouml;</td><td>&divide;</td><td>&oslash;</td><td>&ugrave;</td> 
+<td>&uacute;</td><td>&ucirc;</td><td>&uuml;</td><td>&yacute;</td> 
+<td>&thorn;</td><td>&yuml;</td>
+</tr>
+<tr>
+<td>F2</td><td>F3</td><td>F4</td><td>F5</td><td>F6</td><td>F7</td>
+<td>F8</td><td>F9</td><td>FA</td><td>FB</td><td>FC</td><td>FD</td>
+<td>FE</td><td>FF</td>
+</tr>
+</table></center>
+<br>
+<br>
+<br>
+<p><b><font size="+3">Resource statements</b></font>
+<p>Resource statements are the instructions to the Resource
+Compiler which contain the information from which the output file is actually
+made. They fall into four main categories:-
+<ul>
+<li>
+Raw Data resource types (a) data from files (b) data from
+the resource script</li>
+
+<li>
+The stringtable resource</li>
+
+<li>
+The information resource types</li>
+
+<li>
+Resources for the user-interface</li>
+</ul>
+
+<p><a NAME="raw"></a><b>Raw data resource types
+- (a) data from files</b>
+<br><a href="#top">Back to top</a>
+<p>With these resources the Resource Compiler merely takes
+raw data from an input file and adds it to the output file (sometimes with
+some extra processing). Hence the data from these files makes its way to
+the EXE, when the file is linked, for use during run-time. This is a convenient
+way to keep the data from such files in the EXE. An alternative would be
+to ship the individual files with the product for loading at run-time,
+but this runs the risk that those files may get lost.
+<p>The data (as raw data) can be used at run-time by calling
+the FindResource and LoadResource APIs, but there are some specific APIs
+which also provide manipulation of the data. The various raw data resource
+types which work using files, their resource type numbers, and the specific
+API (if any) to load them during run-time are:-
+<dir>
+<dir>CURSOR 1 LoadCursor or LoadImage
+<br>BITMAP 2 LoadBitmap or LoadImage
+<br>ICON 3 LoadIcon or LoadImage
+<br>FONT 8 <i>no longer in use</i>
+<br>MESSAGETABLE 11 FormatMessage
+<br>PLUGPLAY 19
+<br>VXD 20
+<br>ANICURSOR 21
+<br>ANIICON 22
+<br>HTML 23
+<br>MANIFEST 24
+<br><i>User-defined resource By name</i>
+<br>
+<br></dir>
+</dir>
+The <i>User defined resource</i> is a resource holding raw
+data only, which is of the <i>type </i>defined by the user. It can be defined
+by name, for example, MyRes, or by number, which can be any 16-bit number
+above 0FFh. The numbers 1 to 0FFh are reserved for the system defined resources.
+<p>The general syntax for these resource types in the resource
+script (using CURSOR as an example) is:-
+<p><i>nameID </i>CURSOR <i>filename</i>
+<p>Where, in the normal case,
+<p><i>nameID </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a 16-bit number of value 1 to 7FFFh
+<br>an expression which evaluates to that number
+<br>a name (except for FONT)
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+A FONT resource cannot identified by name, so in the case
+of a FONT,
+<p><i>nameID </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a 16-bit number of value 1 to 7FFFh
+<br>an expression which evaluates to that number
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>filename </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a quoted string
+<br>a non-quoted string
+<br>a string in less-than and greater-than characters</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+unless the file is in the current directory, the full path
+should be given
+<dir>
+<dir><b><u>Examples</u></b>
+<br><font face="Courier New"><font size="-1">2 CURSOR happy.cur
+<br>0x6666 BITMAP c:\bitmaps\happy.bmp
+<br>MyIcon ICON "happy.ico"
+<br>#define ID_MINE 22
+<br>ID_MINE ICON &lt;happier.ico>
+<br>44h FONT happy.fnt
+<br>ID_MINE FONT happier.fnt
+<br>1 MANIFEST "YourApp.manifest"
+<br>788h MYRES happier.txt &nbsp;<i>;(a user-defined resource)</i>
+<br>788h 100h happier.txt &nbsp;<i>;(a user-defined resource)</i></font></font>
+</dir>
+</dir>
+<br>
+<p><b>Raw data resource types - (b) data from resource script</b>
+<p>These resources allow you to insert raw data into the
+EXE via the binary resource file. The Resource Compiler makes no alteration
+to the raw data. Unless use is being made of the ability of the system
+to distinguish between resources of different languages, assembler programmers
+would probably not find much use for this as it is so simple to use the
+data segment to keep data..
+<p>The data (as raw data) can be used at run-time by calling
+the FindResource and LoadResource APIs.
+<p>This type of resource is called RCDATA (type number 10).
+Alternatively you can choose any name for the resource in which case it
+works the same way as RCDATA except that the resource type has a name.
+This is called a <i>user-defined resource</i>. Alternatively you can also
+simply provide any 16 bit number above 0FFh for the resource type.
+<p>The syntax for RCDATA is:-
+<br><i>nameID </i>RCDATA
+<br>[<i>defining-statements</i>]
+<br>BEGIN
+<br><i>raw-data</i>
+<br>END
+<p>Or, in the case of a <i>user-defined resource</i>:-
+<br><i>nameID type</i>
+<br>[<i>defining-statements</i>]
+<br>BEGIN
+<br><i>raw-data</i>
+<br>END
+<p>Where,
+<p><i>nameID </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a 16-bit number of value 1 to 7FFFh
+<br>an expression which evaluates to that number
+<br>a name
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>defining-statements</i> need not be present, but can be
+either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a VERSION statement
+<br>a CHARACTERISTICS statement
+<br>a LANGUAGE statement
+<p>see below for details
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>type</i> can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a 16-bit number greater than 0FFh
+<br>an expression which evaluates to a 16-bit number greater
+than 255
+<br>a name in characters
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>raw-data</i> can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>an ANSI quoted string
+<br>a Unicode quoted string starting L"
+<br>a numerical value stored as a word
+<br>a numerical value stored as a dword (ending in L)
+<br>
+<br></dir>
+</dir>
+</dir>
+<b><u>Examples</u></b>
+<br><font face="Courier New"><font size=-1>0x3333 RCDATA
+<br>BEGIN
+<dir>
+<dir>"Hello world"
+<br>"Hello world (zero terminated)\0"
+<br>L"A Unicode version of the above\0"
+<br>0x9999 &nbsp;<i>;hex number stored as a word</i></dir>
+</dir>
+END
+<p>MyRes RCDATA
+<br>BEGIN
+<dir>
+<dir>1034 &nbsp;<i>;decimal number stored as a word</i></dir>
+</dir>
+END
+<p>MyRes MyResType
+<br>BEGIN
+<dir>
+<dir>10456L &nbsp;<i>;decimal number stored as a dword</i>
+<br>1234L,56666L,99999L &nbsp;<i>;decimal numbers stored as dwords</i>
+</dir>
+</dir>
+END
+<p>34h 100h
+<br>BEGIN
+<dir>
+<dir>
+33hL,34hL,35hL,36hL &nbsp;<i>;hex numbers stored as dwords</i>
+<br>0x37L,0x38L,0x39L,0x40L &nbsp;<i>;C-style hex numbers stored as dwords</i>
+</dir></dir>
+END</font></font>
+<br>
+<br>
+<br>
+<br></dir>
+</dir>
+<b><a NAME="ste"></a>The STRINGTABLE resource</b>
+<br><a href="#top">Back to top</a>
+<p>The STRINGTABLE resource enables strings to be kept in
+the EXE to be recovered when needed at run time. For assembler programmers
+this would be an alternative to keeping the strings in the data segment.
+Even if you need to use Unicode strings, if you are using GoAsm as your 
+assembler it is usually 
+easier to keep the strings in data rather than to use the STRINGTABLE resource.
+<br>If the source file is in ANSI format, strings in the STRINGTABLE resource 
+are automatically converted to Unicode by the Resource Compiler, so there is 
+no need to use the "C" style Unicode indicator L"<i>string</i>". The Resource 
+Compiler regards the L"<i>string</i>" indicator as implicit.  The conversion
+is carried out using the API MultiByteToWideChar. This API uses
+the current codepage for this conversion, so you need to ensure that at
+compile time your machine is set to use the same codepage as was used when
+the source script was made.
+<br>If the source file is in Unicode format, then no conversion takes place
+and codepages are not used: the strings are used as they appear in the resource 
+script.
+<p>One reason why the assembler programmer might wish
+to keep strings in a STRINGTABLE resource rather than in the data segment
+would be to take advantage of the ability of the system to distinguish
+strings of different languages at run-time.
+<p>The strings are kept in blocks of 16 strings. Each block
+will have the same language and also the same upper 12-bits of the ID which
+was specified in the resource script. The least significant 4 bits are
+blanked out and are not be recorded because it is assumed that the IDs
+run in sequence in each block from 0 to 0Fh. To make this assumption valid,
+if the string IDs are not in sequence the Resource Compiler has to insert
+empty strings. To reduce space requirements, therefore, it is best to keep
+the identifiers sequential.
+<p>To recover one of the strings call LoadString giving the
+string identifier. It will then be copied into a buffer with a nul terminator.
+<p>The syntax for the STRINGTABLE resource is as follows:-
+<p>STRINGTABLE
+<br>[<i>defining-statements</i>]
+<br>BEGIN
+<br>s<i>tringID "string"</i>
+<br><i>.........</i>
+<br>END
+<p>Where,
+<br><i>stringID</i> is
+<dir>
+<dir>a 16 bit number which identifies the string
+<br>an expression which resolves to that number
+<br><i>"string" </i>is a quoted string of not more than 4097
+characters, or an expression which is defined elsewhere as a string.
+<p>If the string straddles more than one line the Resource
+Compiler inserts a space and a line feed character (ASCII 0Ah) at the line
+break and all leading spaces on the next line in your resource script are
+suppressed.
+<br>
+<br></dir>
+</dir>
+<h4>Information resource types</h4>
+<p>These types of resources are used to keep information
+about the EXE in a certain format, for use by tools or for information
+to the user.
+<p>There are two types of such resources.
+<p>Firstly DLGINCLUDE (resource type17) which contains a
+filename which is read by the Microsoft Dialog Editor. This filename is
+that of the include file containing definitions when making dialogs. This
+information is not actually kept in the EXE, and is disgarded by the linker.
+<p>Its syntax is:-
+<br><i>nameID </i>DLGINCLUDE <i>filename</i>
+<p>Where<i>,</i>
+<br><i>nameID </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a 16-bit number of value 1 to 7FFFh
+<br>an expression which evaluates to that number
+<br>a name
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>filename </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a quoted string
+<br>a non-quoted string
+<br>a string in less-than and greater-than characters
+<br>unless the file is in the current directory, the full
+path should be given
+<br>
+<br>
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<b><a NAME="ver"></a>The VERSIONINFO resource</b>
+<br><a href="#top">Back to top</a>
+<p>Secondly, the VERSIONINFO resource (resource type 16),
+which is used to keep information about the version of the EXE, which may
+be required during its installation or if it is updated.
+<p>The version information can be retrieved in various ways
+using the APIs GetFileVersonInfo, GetFileVersionInfoSize, and VerQueryValue.
+Also it is the information which appears in the "Version" property sheet
+when looking at the "Properties" of an Executable file in Windows.
+<p>The syntax for this resource is:-
+<dir>
+<dir>1 VERSIONINFO</dir>
+</dir>
+[<i>fixed-info statements</i>]
+<br>BEGIN
+<br>BLOCK "StringFileInfo"
+<dir>
+<dir>BEGIN
+<dir>
+<dir>BLOCK <i>lang-charset</i>
+<br>BEGIN
+<br><i>string-value statements</i>
+<br>END
+<br>END
+<br>BLOCK "VarFileInfo"
+<br>BEGIN
+<br>VALUE "Translation"
+<br><i>lang/char statements</i></dir>
+</dir>
+END</dir>
+</dir>
+END
+<p>Where,
+<dir>
+<dir><i>fixed-info statements </i>can be one or more of the
+following statements with data as in the following examples. The data is
+used by the Resource Compiler to fill a structure of 13 dwords which is
+kept in the binary resource file and therefore in the EXE file (the VS_FIXEDFILEINFO
+structure)
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>FILEVERSION 3h,0Ah,0,3Dh
+<br>this value needs to be written as four 16-bit values which
+are in fact recorded as two dwords: in this example the first dword (most
+significant) is 3000Ah and the second dword (least significant) is 3Dh,
+producing a version value of 3000A 0000003Dh.
+<br>PRODUCTVERSION 6666h,0000h,0000h,7777h
+<br>defines a product version of 66660000 00007777h
+<br>FILEFLAGSMASK 3Fh
+<br>specifies which bits in the next parameter are valid
+<br>FILEFLAGS <i>fileflags</i>
+<br>which can be one or more of the following flags or values
+<dir>VS_FF_DEBUG (1= the file contains debugging information)
+<br>VS_FF_PATCHED (4= the version information has been changed
+from original shipping version)
+<br>VS_FF_PRERELEASE (2= the file is a development version
+only and not commercially available)
+<br>VS_FF_PRIVATEBUILD (8= the file was not built using standard
+release procedures)
+<br>VS_FF_SPECIALBUILD (20h= the file was built using standard
+release procedures but is a variation of the standard file of the same
+version number)
+<br>
+<br></dir>
+FILEOS <i>fileos</i>
+<br>where <i>fileos</i> specifies the operating system for
+which the file was designed and can be one of the following values
+<dir>VOS_UNKNOWN (value zero - unknown)
+<br>VOS_DOS (1000h= file designed for DOS)
+<br>VOS_NT (4000h= file designed for Windows NT)
+<br>VOS_WINDOWS32 (4= file designed for 32 bit Windows)
+<br>VOS_NT_WINDOWS32 (40004h= file designed for 32 bit Windows
+running under Windows NT)</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+FILETYPE <i>filetype</i>
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>where <i>filetype</i> specifies the general type of
+the file and can be one of the following values
+<dir>VFT_UNKNOWN (value zero=unknown)
+<br>VFT_APP (1= it’s an application)
+<br>VFT_DLL (2= it’s a DLL)
+<br>VFT_DRV (3= it’s a device driver)
+<br>VFT_FONT (4= it’s a font)
+<br>VFT_VXD (5= it’s a virtual device)
+<br>VFT_STATIC_LIB (7= it’s a static link library)</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+FILESUBTYPE <i>subtype</i>
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>where <i>subtype </i>specifies more information about
+the type of file, and if <i>filetype</i> is VFT_DRV can be one of the following
+values
+<dir>VFT2_UNKNOWN (value zero -unknown)
+<br>VFT2_PRINTER (1= it’s a printer driver)
+<br>VFT2_KEYBOARD (2= it’s a keyboard driver)
+<br>VFT2_LANGUAGE (3= it’s a language driver)
+<br>VFT2_DISPLAY (4= it’s a display driver)
+<br>VFT2_MOUSE (5= it’s a mouse driver)
+<br>VFT2_NETWORK (6= it’s a network driver)
+<br>VFT2_SYSTEM (7= it’s a system driver)
+<br>VFT2_DRV_INSTALLABLE (8= it’s an installable driver)
+<br>VFT2_DRV_SOUND (9= it’s a sound driver)
+<br>VFT2_DRV_COMM (0Ah= it’s a communications driver)</dir>
+if <i>filetype</i> is VFT_FONT it can be one of the following
+values
+<dir>VFT2_FONT_RASTER (1= a raster font)
+<br>VFT2_FONT_VECTOR (2= a vector font)
+<br>VFT2_FONT_TRUETYPE (3= a TrueType font)</dir>
+if <i>filetype</i> is VFT_VXD this value must be the virtual-device
+identifier included in the virtual-device control block</dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<p>The names of the <i>fixed-info statements </i>are fixed and
+are used by the Resource Compiler to decide where in the VS_FIXEDFILEINFO
+structure to put the specified value. As you can see, certain values have
+definite meanings reserved by Microsoft, but there seems to be no reason
+why you cannot use your own values which may have a special meaning to
+your application.
+<p><i>lang-charset</i> is a quoted string containing (in
+numbers) a hex number which gives the language and character set used in
+the string-value statements which follow. The most common value found here
+is "040904E4" meaning US English + Windows, multilingual character set
+<p><i>lang/char statements</i> are two 16-bit numbers separated by a
+comma. The first represents a language and the second a character set
+supported by the application. If a lang/char statement is included in the
+VERSIONINFO resource, the system will initialise the "Version" property
+sheet found when looking at the "Properties" of the executable file, and
+will include a "Language" key. 
+The most common value found is 0x409,1252 which is US English + Windows,
+multilingual character set, the latter being given in its decimal value,
+but 4E4h would do just as well
+<br>
+<br>
+<p><i>string-value statements</i> are a series of statements
+containing two quoted strings with the following syntax:-
+<p>"<i>name", "value"</i>
+<p>"<i>name" </i>is a string which would be given to the
+API VerQueryValue in order to retrieve the <i>value</i>
+<p>The following strings are looked for by the system when showing
+the "Version" property sheet:-
+<p>"FileVersion", "FileDescription" and "LegalCopyright",
+and the <i>value</i> appears at the top of the property sheet adjacent
+to the words "File Version", "Description" and "Copyright" respectively.
+<p>Other strings appear in listboxes in the property sheet.
+You can use whatever string you like, although there if they are too long
+they are truncated in the property sheet and they always appear in alphabetical
+order.
+<p>You often see one of the following strings being used
+- "Comments" "CompanyName" "InternalName" "LegalTradmarks" "OriginalFilename"
+"PrivateBuild" "ProductName" "ProductVersion" "SpecialBuild"
+<p>"<i>value</i>" is a user defined value in a quoted string
+which corresponds to one of the standard strings and will be returned by
+VerQueryValue.
+<br>
+<br></dir>
+<b><u>Example of a VERSIONINFO resource</u></b>
+<br><font face="Courier New"><font size="-1">1 VERSIONINFO
+<br>FILEVERSION 2,0,0,0
+<br>PRODUCTVERSION 2,0,0,0
+<br>FILEFLAGSMASK 0x0000003FL
+<br>FILEFLAGS 0x0000000BL
+<br>FILEOS 0x00010001L
+<br>FILETYPE 0x00000001L
+<br>FILESUBTYPE 0x00000000L
+<br>BEGIN
+<br>BLOCK "StringFileInfo"
+<br>BEGIN
+<br>BLOCK "040904E4"
+<br>BEGIN
+<br>VALUE "CompanyName", "MySoftware Company"
+<br>VALUE "Contact e-mail", "MySoftware@ether.com"
+<br>VALUE "FileDescription","MySoftware.Exe"
+<br>VALUE "FileVersion", "3.45"
+<br>VALUE "DevelopmentFile","Dev345.asm"
+<br>VALUE "LegalCopyright","Copyright\251 2001 Co"
+<br>VALUE "Resources made using","GoRC.Exe"
+<br>END
+<br>END
+<br>BLOCK "VarFileInfo"
+<br>BEGIN
+<br>VALUE "Translation", 0x0409,1252
+<br>END
+<br>END</font></font>
+<br>
+<br>
+<br>
+<br></dir>
+</dir>
+<b><font size="+3">Resources for the user-interface</b></font>
+<p>These types of resources make it easy to create accelerators,
+menus, and dialogs - three basic ingredients for the user interface. In
+each case it is possible to use the APIs instead of using the resource
+file, but this is normally much less convenient, and no advantage can be
+taken of the system being able automatically to discriminate between menus
+and dialogs of different languages.
+<p>In order to use these resources, in a single language
+application a specific API is called to obtain a handle to the resource.
+<p>The five resource types under this heading, the resource
+type numbers and the APIs used to use the resources are:-
+<dir>
+<dir>ACCELERATORS 9 LoadAccelerators
+<br>MENU 4 LoadMenu
+<br>MENUEX 4 LoadMenu
+<br>DIALOG 5 CreateDialogParam, DialogBoxParam
+<br>DIALOGEX 5 CreateDialogParam, DialogBoxParam
+<br>
+<br>
+<br></dir>
+</dir>
+<p><b><a NAME="acc"></a>The ACCELERATORS resource</b>
+<br><a href="#top">Back to top</a>
+<p>The syntax for the ACCELERATORS resource is:-
+<br><i>nameID </i>ACCELERATORS
+<br>[<i>defining-statements</i>]
+<br>BEGIN
+<br><i>event, result </i>[,<i>type/options</i>]
+<br>...........
+<br>END
+<p>Where,
+<br><i>nameID </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a 16-bit number of value 1 to 7FFFh
+<br>an expression which evaluates to that number
+<br>a name
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>defining-statements</i> need not be present, but can be
+either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a VERSION statement
+<br>a CHARACTERISTICS statement
+<br>a LANGUAGE statement
+<br>see below for details
+<br>
+<br></dir>
+</dir>
+</dir>
+<i>event</i> specifies the keystroke which will cause <i>result</i>
+to be sent to the message loop of the process which loaded the accelerators.
+It can be either:-
+<dir>
+<dir>
+<dir>a single character enclosed in quotes eg. "a" meaning the key "a"
+<br>a single character preceded by a caret eg. "^A" meaning
+the key is a Crtl key (if ^ is used the character must be an upper case
+letter
+<br>a 16 bit number
+<br>an expression which evaluates to a 16-bit number. Commonly,
+the expressions which are used are the VK_ names listed in Winuser.h.
+<br>
+<br></dir>
+</dir>
+</dir>
+<i>result</i> can be either:-
+<dir>
+<dir>
+<dir>a 16-bit number
+>br>an expression which evaluates to a 16-bit number
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>type/options</i> can be any of the following values, separated
+by commas:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>ASCII (value zero, meaning that the event value refers
+to an ASCII character value)
+<br>VIRTKEY (value 1, meaning that the event value refers
+to a virtual key value)
+<br>(if neither ASCII nor VIRTKEY are specified, then ASCII
+is assumed)
+<br>SHIFT (4= event only occurs if Shft key is pressed)
+<br>CONTROL (8= event only occurs if Crtl key is pressed)
+<br>ALT (10h= event only occurs if Alt key is pressed)
+<br>NOINVERT (2= do not highlight a top level menu item if
+possible when an accelerator is used)
+<br>
+<br></dir>
+</dir>
+</dir>
+<b>Example of ACCELERATORS resource</b>
+<br><font face="Courier New"><font size="-1">0x20 ACCELERATORS
+<br>BEGIN
+<dir>"N", 20h, CONTROL
+<br>"^A", 0x1111
+<br>"K", 0x2222
+<br>"k", 0x3333, ALT
+<br>98, 0x4444, ASCII
+<br>66, 0x5555, ASCII
+<br>"g", 0x6666
+<br>"G", 0x7777
+<br>"K", 0x2222, VIRTKEY
+<br>67, 0x5556, VIRTKEY
+<br>68, 0x5557, VIRTKEY, NOINVERT
+<br>VK_F1, 0x8888, VIRTKEY
+<br>VK_F2, 0x8889, CONTROL, VIRTKEY
+<br>VK_F3, 0x888A, SHIFT, VIRTKEY
+<br>VK_LBUTTON, 0x888B, ALT, VIRTKEY
+<br>VK_NUMPAD4, 0x888C, ALT, SHIFT,VIRTKEY
+<br>VK_SPACE, 0x888D, CONTROL, SHIFT,VIRTKEY
+<br>VK_END, 0x888E, ALT, CONTROL,VIRTKEY</dir>
+END</font></font>
+<br>
+<br>
+<br></dir>
+</dir>
+<b><a NAME="men"></a>The MENU resource</b>
+<br><a href="#top">Back to top</a>
+<p>The syntax for the MENU resource is:-
+<br><i>nameID </i>MENU
+<br>[<i>defining-statements</i>]
+<br>BEGIN
+<br>MENUITEM "<i>text", id </i>[,<i>type/state</i>]
+<br>POPUP "<i>text" </i>[,<i>type/state</i>]
+<br>BEGIN
+<br>MENUITEM "<i>text", id </i>[,<i>type/state</i>]
+<br>END
+<br>MENUITEM SEPARATOR
+<br>...........
+<br>END
+<br>
+<br>
+<p>The syntax for the MENUEX resource is:-
+<br><i>nameID </i>MENUEX [,<i>helpID</i>]
+<br>[<i>defining-statements</i>]
+<br>BEGIN
+<br>MENUITEM "<i>text", id </i>[,<i>type/state</i>]
+<br>POPUP "<i>text", </i>[<i>id</i>] [,<i>type/state</i>]
+[,<i>helpID</i>]
+<br>BEGIN
+<dir>
+<dir>MENUITEM "<i>text", id </i>[,<i>type/state</i>]</dir>
+</dir>
+END
+<br>MENUITEM SEPARATOR
+<br>END
+<dir>
+<dir>Where,</dir>
+</dir>
+<i>nameID </i>can be either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a 16-bit number of value 1 to 7FFFh
+<br>an expression which evaluates to that number
+<br>a name
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>defining-statements</i> need not be present, but can be
+either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a VERSION statement
+<br>a CHARACTERISTICS statement
+<br>a LANGUAGE statement
+<br>see below for details
+<br>
+<br></dir>
+</dir>
+</dir>
+<i>"text"</i> is a quoted string containing the text for
+the menu or popup item. It can contain \t which inserts a tab, or \a which
+aligns to the right all text which follows it. An ampersand tells the system
+to use the following character as an accelerator key. Use two ampersands
+to write &amp;. You can have a menu item without any text by having ""
+in this field, but this simply gives the same result as having a SEPARATOR.
+If you want a completely empty menu line use " " instead (giving the menu
+item a string which contains only a space).
+<dir>
+<dir>
+<dir><i>id</i> is the value which is sent to the window procedure
+of the window which owns the menu.
+<p>It can be:-
+<br>a 16-bit number (MENU) or a 32-bit number (MENUEX)
+<br>an expression which evaluates to the above number
+<br>
+<br></dir>
+</dir>
+</dir>
+<i>type/state</i> is one or more of the following words separated
+by spaces or the | (OR) operator:-
+<dir>
+<dir>
+<dir>MENUBREAK (<i>type </i>value 40h - puts the next menu
+item on a new line or in a new column in the case of popup menus)
+<br>MENUBARBREAK (<i>type </i>value 20h - same as above but
+includes a separator line)
+<br>OWNERDRAW (<i>type</i> value 100h - process is responsible
+for drawing the menu)
+<br>RADIOCHECK (<i>type </i>value 200h - radio button used
+instead of check-mark for checked items)
+<br>RIGHTJUSTIFY (<i>type</i> value 4000h - right justifies
+menu text only, not popups)
+<br>HELP (<i>type</i> value 4000h- identifies a help item)
+<br>SEPARATOR (<i>type</i> value 800h - for popups only)
+<br>CHECKED (<i>state</i> value 8h - checks the menu item)
+<br>GRAYED (<i>state</i> value 3h - disables and grays the
+menu item)
+<br>DISABLED (<i>state</i> value 3h - same as above)
+<br>HILITE (<i>state</i> value 80h - highlights the menu item)
+<br>DEFAULT (<i>state</i> value 1000h - displays text in bold
+- enter key will act in the same way as a mouse click on this item)
+<br>
+<br></dir>
+</dir>
+</dir>
+Instead of using the <i>type/state</i> words, you can use
+the values instead but ensure that they are inserted as follows: <i>type,state</i>
+or <i>type+type,state+state </i>(type values are first, then comma, then
+state values)
+<p><i>helpID </i>which is used in MENUEX only, is a value
+sent to the window procedure of the window which owns the menu if F1 is
+pressed when the menu is active. It can be:-
+<dir>
+<dir>
+<dir>a 32-bit number
+<p>an expression which evaluates to a 32 bit number</dir>
+</dir>
+</dir>
+<b>important</b> - in the POPUP statement, to ensure that
+the <i>helpID</i> is properly identified, make sure there are a total of
+3 commas between <i>id</i> and <i>helpID</i>. This tells the Resource Compiler
+that <i>helpID</i> is not a <i>type </i>nor a <i>style</i> value.
+<p>MENUITEM SEPARATOR creates a horizontal line in the menu
+which is useful for separating different types of menu items
+<p><b><u>Example of MENU resource</u></b>
+<br><font face="Courier New"><font size="-1">#define IDM_NEW 10h
+<br>#define IDM_OPEN 20h
+<br>GENERIC MENU
+<br>BEGIN
+<dir>
+<dir>POPUP "&amp;File"
+<br>BEGIN
+<dir>
+<dir>MENUITEM "&amp;New...", IDM_NEW,GRAYED
+<br>MENUITEM "&amp;Open...", IDM_OPEN,GRAYED
+<br>MENUITEM SEPARATOR</dir>
+</dir>
+POPUP "Send to"
+<br>BEGIN
+<dir>
+<dir>MENUITEM "Drive a:"</dir>
+</dir>
+END
+<br>END
+<br>POPUP "View"
+<br>BEGIN
+<dir>
+<dir>MENUITEM "Toolbar\tCrtl+T", 33h, CHECKED,HILITE</dir>
+</dir>
+END</dir>
+</dir>
+END</font></font>
+<p><b><u>Example of MENUEX resource</u></b>
+<br><font face="Courier New"><font size="-1">#define IDM_NEW 10h
+<br>#define IDM_OPEN 20h
+<br>GENERIC MENUEX 99999999h
+<br>BEGIN
+<dir>
+<dir>POPUP "nice day", 0x100, CHECKED,,6666666h
+<br>BEGIN
+<dir>
+<dir>MENUITEM "&amp;New...",IDM_NEW,GRAYED,MENUBREAK
+<br>MENUITEM "&amp;Open...", IDM_OPEN,GRAYED
+<br>MENUITEM SEPARATOR</dir>
+</dir>
+POPUP "Send to"
+<br>BEGIN
+<dir>
+<dir>MENUITEM "Drive a:"</dir>
+</dir>
+END
+<br>END
+<br>POPUP "View"
+<br>BEGIN
+<dir>
+<dir>MENUITEM "Toolbar", 33h, CHECKED| HILITE</dir>
+</dir>
+END
+</dir>
+</dir>
+END</font></font>
+</dir>
+</dir>
+<br>
+<br>
+<p><a NAME="dia"></a><b>The DIALOG resource</b>
+<br><a href="#top">Back to top</a>
+<p>The syntax for the DIALOG resource is:-
+<br>
+<br>
+<i>nameID </i>DIALOG <i>x, y, width, height</i>
+<dir>
+<dir>[<i>defining-statements</i>]</dir>
+</dir>
+[<i>dialog-statements</i>]
+<br>BEGIN
+<br><i>iconcontrol</i>
+<br><i>textcontrol</i>
+<br><i>non-textcontrol</i>
+<br><i>generic-control</i>
+<br>END
+<p>The syntax for the DIALOGEX resource is:-
+<br>
+<br>
+<i>nameID </i>DIALOGEX <i>x, y, width, height </i>[<i>,helpID</i>]
+<br>[<i>defining-statements</i>]
+<br>[<i>dialog-statements</i>]
+<br>BEGIN
+<br><i>iconcontrol</i>
+<br><i>textcontrol </i>[,<i>helpID</i>]
+<br><i>non-textcontrol </i>[,<i>helpID</i>]
+<br><i>generic-control </i>[,<i>helpID</i>]
+<br>END
+<br>
+<br>
+<p>Where,
+<br><i>nameID </i>can be either:-
+<dir>
+<dir>
+<dir>a 16-bit number of value 1 to 7FFFh
+<br>an expression which evaluates to that number
+<br>a name
+<br>
+<br></dir>
+</dir>
+</dir>
+<i>x</i> is the horizontal position of the dialog in dialog
+units
+<br><i>y</i> is the vertical position of the dialog in dialog
+units
+<br><i>width</i> is the width of the dialog in dialog units
+<br><i>height</i> is the height of the dialog in dialog units
+<dir>
+<dir><i>helpID </i>which is used in DIALOGEX only, is a value
+which is sent to the dialog procedure if F1 is pressed when the dialog
+is active. A <i>helpID</i> specified for a control is sent if the user
+clicks the control after having dragged the help question mark. <i>helpID</i>
+can be:-
+<dir>
+<dir>
+<dir>a 32-bit number
+<br>an expression which evaluates to a 32 bit number
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>defining-statements</i> need not be present, but can be
+either:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>a VERSION statement
+<br>a CHARACTERISTICS statement
+<br>a LANGUAGE statement
+<br>see below for details
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>dialog-statements</i> need not be present, but can be
+one or more of the following:-
+<dir>
+<dir>
+<dir>
+<dir>
+<dir>CAPTION "<i>text</i>"
+<br>where "<i>text</i>" is the title of the dialog to insert
+in the title bar
+<p>CLASS <i>class</i>
+<br>this statement is used if you have registered your own
+private window class for the dialog because you want to intercept dialog
+messages before they go to the system’s default dialog window procedure.
+<i>class</i> can be:-
+<br>a 16-bit number
+<br>a quoted string
+<p>EXSTYLE <i>exstyle </i>allows an extended style to be
+specified see <i>window types and styles</i>
+<p>FONT <i>pointsize, "typeface" </i>;if DIALOG
+<br>FONT <i>pointsize, "typeface" </i>[<i>,weight, italic</i>]<i>
+</i>;if DIALOGEX
+<br>this statement must be present if the dialog has the DS_SETFONT
+style and it contains the information which the system uses to write the
+text within the dialog box and its controls. If this statement is present
+the dialog box is given the style DS_SETFONT automatically.
+<br><i>pointsize </i>is a 16 bit number giving the size of
+the font
+<br><i>typeface </i>is a quoted string giving the name of
+the typeface
+<br><i>weight</i> (DIALOGEX only) is either:-
+<dir>a 16 bit number
+<br>an expression which evaluates to a 16 bit number
+<dir>
+<dir>
+<dir>one of the words known to the Resource Compiler set
+out below (the weight is given in the second column)</dir>
+</dir>
+</dir>
+FW_DONTCARE 0
+<br>FW_THIN 100
+<br>FW_EXTRALIGHT 200
+<br>FW_LIGHT 300
+<br>FW_NORMAL 400
+<br>FW_MEDIUM 500
+<br>FW_SEMIBOLD 600
+<br>FW_BOLD 700
+<br>FW_EXTRABOLD 800
+<br>FW_HEAVY 900
+<br>if this parameter is omitted it is set to zero (don’t
+care)
+<br><i>italic </i>(DIALOGEX only) indicates whether italics
+should be used and is either:-
+<br>the number 0 or the word FALSE to indicate not italic,
+or
+<br>the number 1 or the word TRUE to indicate italic
+<br>if this parameter is omitted it is set to zero (non-italic)</dir>
+<p>MENU <i>menuname</i>
+<br>this statement if present specifies a menu for the dialog
+box and <i>menuname</i> is either:-
+<br>a 16-bit number identifying the menu. This would be the
+number given as the <i>nameID</i> of the menu resource.
+<br>the name of a menu resource if the <i>nameID </i>of the
+menu was a name
+<p>STYLE <i>styles</i>
+<br>this statement is used to change the default dialog box
+style which is:-
+<br>WS_POPUP | WS_BORDER | WS_SYSMENU, which is the same as
+80000000h | 800000h | 80000h
+<br>To remove an unwanted default style you can use the word
+NOT or !, for example
+<br>STYLE NOT SYSMENU
+<br>or
+<br>STYLE !80000h
+<br>would produce a dialog box with a style of WS_POPUP and
+WS_BORDER only.
+<br>The following styles and their respective values can be
+used in this statement:-
+<dir>
+<dir>DS_MODALFRAME (value 80h) creates a dialog box with
+a modal dialog frame (can be combined with WS_CAPTION and WS_SYSMENU styles)
+<br>DS_SYSMODAL (value 2h) gives the dialog box the WS_EX_TOPMOST
+style
+<br>WS_BORDER (value 800000h) creates a dialog box with a
+border
+<br>WS_DLGFRAME (value 400000h) creates a modal dialog box
+type of frame for the dialog but no title bar
+<br>WS_OVERLAPPED (value zero) see <i>window types and styles</i>
+<br>WS_OVERLAPPEDWINDOW see <i>window types and styles</i>
+<br>WS_POPUPWINDOW see <i>window types and styles</i>
+<br>WS_CAPTION (value 0C00000h) combination of WS_BORDER and
+WS_DLGFRAME see <i>window types and styles</i>
+<br>WS_POPUP (value 80000000h) see <i>window types and styles</i>
+<br>WS_CHILD (value 40000000h) see <i>window types and styles</i>
+<br>WS_CLIPCHILDREN (value 2000000h) see <i>window types and
+styles</i>
+<br>WS_CLIPSIBLINGS (value 4000000h) see <i>window types and
+styles</i>
+<br>WS_MINIMIZEBOX (value 20000h) dialog box has a minimizebox
+in the title bar
+<br>WS_MAXIMIZEBOX (value 10000h) dialog box has a maximizebox
+in the title bar
+<br>WS_HSCROLL (value 100000h) creates a dialog with a horizontal
+scroll bar
+<br>WS_VSCROLL (value 200000h) creates a dialog box with a
+vertical scroll bar
+<br>WS_SIZEBOX (value 40000h) creates a dialog box with a
+thick frame for resizing
+<br>WS_MINIMIZE (value 20000000h) dialog box is created minimized
+<br>WS_MAXIMIZE (value 1000000h) dialog box is creates maximized
+<br>WS_SYSMENU (value 80000h) creates a dialog box with a
+system menu in its title bar
+<br>WS_DISABLED (value 8000000h) dialog is initially disabled
+<br>DS_NOIDLEMSG (value 100h) suppresses WM_ENTERIDLE messages
+that the system would otherwise send to the owner of the dialog box
+<br>DS_ABSALIGN (value 1h) - the co-ordinates of the dialog
+box are screen co-ordinates as opposed to client co-ordinates
+<br>DS_CENTER (value 800h) centre the dialog box as far as
+possible on the screen
+<br>DS_CENTERMOUSE (value 1000h) centre the mouse cursor in
+the dialog box
+<br>DS_CONTENXTHELP (value 2000h) add a question mark to the
+title bar for help processing
+<br>DS_CONTROL (value 400h) make the dialog box work like
+the child window of another dialog box
+<br>DS_FIXEDSYS (value 8h) use the system’s fixed font rather
+than the proportional font
+<br>DS_SETFONT (value 40h) look for the FONT statement for
+the font to use for the controls and for text in the dialog box
+<br>DS_NOFAILCREATE (value 10h) make the dialog box even if
+there are errors in making the controls
+<br>DS_SETFOREGROUND (value 200h) system to call SetForegroundWindow
+when the dialog is created
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+an <i>iconcontrol</i> displays an icon in the dialog box
+<p>The syntax for an <i>iconcontrol</i> is:-
+<br>ICON <i>nameID, id, x, y</i>
+<br>Where,</dir>
+</dir>
+<i>nameID </i>is the identifier of an ICON resource and it
+is either:-
+<dir>
+<dir>
+<dir>a 16-bit number of value 1 to 7FFFh
+<br>an expression which evaluates to that number
+<br>a quoted string containing the name of the ICON if the
+icon is identified by name
+<br>
+<br></dir>
+</dir>
+</dir>
+<i>x</i> is the horizontal position of the icon
+<br><i>y</i> is the vertical position of the icon
+<dir>
+<dir>
+<dir>
+<dir>
+<dir><i>id</i> can be:-
+<br>a 16-bit number (DIALOG) or a 32-bit number (DIALOGEX)
+<br>an expression which evaluates to the above number
+<br>
+<br></dir>
+</dir>
+</dir>
+a <i>textcontrol </i>is a dialog control which contains text
+and which has a name which is recognised by the Resource Compiler. The
+name of the type of control causes the Resource Compiler to give the control
+the correct class and a default style. To remove a default style you will
+need to use the NOT specifier, as you would to remove a default style for
+the dialog itself.
+<p>The syntax for a <i>textcontrol</i> is:-
+<br><i>textcontrol "text", id, x, y, width, height, </i>[<i>,style
+</i>[<i>,extendedstyle</i>]]
+<br>BEGIN
+<br><i>data-elements</i>
+<br>END
+<br>Where,
+<br><i>"text"</i> is the text to appear in the control
+<dir>
+<dir>
+<dir><i>id</i> can be:-
+<br>a 16-bit number (DIALOG) or a 32-bit number (DIALOGEX)
+<br>an expression which evaluates to the above number
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+<i>x</i> is the horizontal position of the control in dialog
+units
+<br><i>y</i> is the vertical position of the control in dialog
+units
+<br><i>width</i> is the width of the control in dialog units
+<br><i>height</i> is the height of the control in dialog units
+<dir>
+<dir><i>data-elements</i> are one or more elements of data,
+called "Creation data". A pointer to this data is sent to the dialog procedure
+in the lParam parameter of the WM_CREATE message when the control is created.
+The data is made using the same format as for the RCDATA resource.
+<br>
+<br>
+<br>The various <i>textcontrols</i> and their classes are
+given below, together with the default styles
+<dir>
+<dir>
+<dir>LTEXT - static class, default style SS_LEFT and WS_GROUP
+creating a static control with left aligned text
+<br>CTEXT - static class, default style SS_CENTER and WS_GROUP
+creating a static control with centred text
+<br>RTEXT- static class, default style SS_RIGHT and WS_GROUP
+creating a static control with right-aligned text
+<br>GROUPBOX - button class, default style BS_GROUPBOX creates
+a labelled rectangle in the dialog box inside which other controls can
+be grouped
+<br>CHECKBOX - button class, default style BS_CHECKBOX and
+WS_TABSTOP which creates a check box control (small rectangle with text
+next to it)
+<br>AUTOCHECKBOX - button class, default style BS_AUTOCHECKBOX
+and WS_TABSTOP which creates check box control which automatically changes
+to checked or unchecked when the user clicks in the control
+<br>STATE3 - button class, default style BS_3STATE and WS_TABSTOP
+which creates a check box control which has 3 states - checked, unchecked
+and disabled (grayed)
+<br>AUTO3STATE - button class, default style BS_AUTO3STATE
+and WS_TABSTOP which creates a STATE3 control which automatically toggles
+when clicked between the 3 states
+<br>RADIOBUTTON - button class, default style BS_RADIOBUTTON
+and WS_TABSTOP which creates a radio button control
+<br>AUTORADIOBUTTON - button class, default style BS_AUTORADIOBUTTON
+and WS_TABSTOP which creates an automatic radio button
+<br>PUSHBUTTON - button class, default style BS_PUSHBUTTON
+and WS_TABSTOP creates an ordinary push button control containing text
+<br>DEFPUSHBUTTON - button class, default style BS_DEFPUSHBUTTON
+and WS_TABSTOP creates an ordinary push button control containing text
+and showing as the default if the user presses enter
+<br>PUSHBOX - button class, default style BS_USERBUTTON, BS_CHECKBOX
+and WS_TABSTOP giving a flat appearance to the button
+<br>
+<br></dir>
+</dir>
+</dir>
+a <i>non-textcontrol </i>is similar to a <i>textcontrol</i>
+except that it does not contain text in the first instance (this must be
+added at run-time).
+<p>The syntax for a <i>non-textcontrol</i> is:-
+<br><i>non-textcontrol id, x, y, width, height, </i>[<i>,style
+</i>[<i>,extendedstyle</i>]]
+<br>BEGIN
+<br><i>data-elements</i>
+<br>END
+<p>The <i>id</i>, <i>x</i>, <i>y</i>, <i>width</i>, <i>height,
+style </i>and <i>extend style </i>parameters are the same as for the <i>text-control</i>
+<br>The various <i>non-textcontrols</i> and their classes
+are given below, together with the default styles
+<dir>
+<dir>
+<dir>EDITTEXT - edit class, default style ES_LEFT, WS_BORDER
+and WS_TABSTOP which creates a simple edit control
+<br>HEDIT handwriting edit (pen) control
+<br>IEDIT ink edit (pen) control
+<br>LISTBOX - listbox class, default style LBS_NOTIFY and
+WS_BORDER creating a basic listbox
+<br>SCROLLBAR - scrollbar class, default style SBS_HORZ creating
+a basic scrollbar
+<br>COMBOBOX - combobox class, default style CBS_SIMPLE creating
+a basic combobox control
+<br>
+<br></dir>
+</dir>
+</dir>
+</dir>
+</dir>
+a <i>generic-control </i>is a control where you explicitly
+specify the class of the control. It is mainly used for those control classes
+which do not come into the button, edit, static, listbox, scrollbar or
+combobox classes. However, you can use the <i>generic</i>-<i>control </i>syntax
+to make those controls too.
+<p>The syntax for the <i>generic-control</i> is as follows:-
+<br>CONTROL<i> "text", id, class, style, x, y,width,height
+</i>[,<i>extended style</i>]<i> </i>[,<i>helpID</i>]
+<dir>
+<dir>BEGIN
+<br><i>data-elements</i>
+<br>END
+<br>
+<br></dir>
+</dir>
+The <i>id</i>, <i>x</i>, <i>y</i>, <i>width</i>, <i>height,
+style </i>and <i>extend style </i>parameters are the same as for the <i>text-control</i>
+<br><i>"text"</i> is:-
+<dir>
+<dir>
+<dir>a quoted string containing the text for the control
+or "" if it has no text
+<br>in the case of a control of the static class which has
+the SS_BITMAP style, <i>"text" </i>can be a 16 bit number 
+representing the bitmap concerned
+<br>an expression which evaluates to the above text or number
+<br>
+<br></dir>
+</dir>
+</dir>
+<i>class</i> is:-
+<dir>
+<dir>
+<dir>(if one of the first six in the list below) a 16-bit
+number of value 80h to 85h
+<br>an expression which evaluates to the above number
+<br>a quoted string containing the name of the class shown
+in the second column of the list below, or
+<br>a word shown in the first column of the list below
+<br>or (for a user-defined class) a quoted string
+<br>The class can therefore be one of the following:-
+<dir><dir>
+BUTTON "Button" ;value 80h
+<br>EDIT "Edit" ;value 81h
+<br>STATIC "Static" ;value 82h
+<br>LISTBOX "Listbox" ;value 83h
+<br>SCROLLBAR "Scrollbar" ;value 84h
+<br>COMBOBOX "ComboBox" ;value 85h
+<br>WC_HEADER "SysHeader32"
+<br>WC_LISTVIEW "SysListView32"
+<br>WC_TREEVIEW "SysTreeView32"
+<br>HOTKEY_CLASS "msctls_hotkey32"
+<br>UPDOWN_CLASS "msctls_updown32"
+<br>ANIMATE_CLASS "SysAnimate32"
+<br>WC_COMBOBOXEX "ComboBoxEx32"
+<br>WC_TABCONTROL "SysTabControl32"
+<br>MONTHCAL_CLASS "SysMonthCal32"
+<br>PROGRESS_CLASS "msctls_progress32"
+<br>REBARCLASSNAME "ReBarWindow32"
+<br>TOOLTIPS_CLASS "tooltips_class32"
+<br>TRACKBAR_CLASS "msctls_trackbar32"
+<br>STATUSCLASSNAME "msctls_statusbar32"
+<br>TOOLBARCLASSNAME "ToolbarWindow32"
+<br>DATETIMEPICK_CLASS "SysDateTimePick32"
+<br>WC_IPADDRESS "SysIPAddress32"
+<br>WC_PAGESCROLLER "SysPager"
+<br>WC_NATIVEFONTCTL "NativeFontCtl"
+<br>DRAGLISTMSGSTRING "commctrl_DragListMsg"
+</dir>
+</dir>
+</dir>
+<p>For the controls which do not normally take initial
+text, (see <i>non-textcontrols</i> above) you must include an empty <i>text</i>
+string by specifying "", for the <i>text</i> parameter.
+<br><i>style</i> and <i>extendedstyle</i> are chosen to suit
+the particular control being made. Note that there are no default styles,
+other than WS_CHILD and WS_VISIBLE.
+<p><b><u>Example of a DIALOGEX
+resource</u></b>
+<br><font face="Courier New"><font size="-1">0x45 DIALOGEX 0x30, 0x20, 0x200,
+0x400,0x98
+<br>CAPTION "goodbye"
+<br>MENU mymenu
+<br>FONT 10,"Times New Roman",FW_NORMAL,1
+<br>BEGIN
+<dir>
+<dir>CTEXT
+<dir>
+<dir>"hello", 0x20,0x10,0x10,0x10,0x10,
+<br>,WS_EX_PALETTEWINDOW, 0x333</dir>
+</dir>
+COMBOBOX 0x456,30005,4560,300,20
+<br>BEGIN
+<dir>
+<dir>0x888888L
+<br>L"hello folks"
+<br>0x99,0x67,0x5555</dir>
+</dir>
+END
+<dir>
+<dir>
+<dir>
+<dir>CONTROL "ducks",0x460,"ComboBoxEx32",0x100,30005,4560,300,20</dir>
+</dir>
+</dir>
+</dir>
+CONTROL "drakes",0x461,0x85,0x100,30005,4560,300,20
+<br>CONTROL "hens",0x462,"Button",0x100,30005,4560,300,20
+<dir>
+<dir>
+<dir>
+<dir>CONTROL "and",0x463,"Own class",0x100,30005,4560,300,20
+<br>CONTROL "chickens",0x464,STATUSCLASSNAME,
+0x100,30005,4560,300,20</dir>
+</dir>
+</dir>
+</dir>
+ICON "ANI_ICON",0x465, 6, 9, 18, 20</dir>
+</dir>
+END</font></font>
+<br>
+<br>
+<br><b><u>Example of a DIALOG
+resource</u></b>
+<br><font face="Courier New"><font size="-1">AboutBox DIALOG 100, 100, 160,
+72
+<br>STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+<br>FONT 8,"MS Sans Serif"
+<br>CAPTION "About it"
+<br>BEGIN
+<dir>
+<dir>CTEXT "Application" -1, 0, 8, 160, 8
+<br>CTEXT "Version 1.2" -1, 0, 16, 160, 8
+<br>DEFPUSHBUTTON "OK" IDOK, 55,52,50,14</dir>
+</dir>
+CONTROL 23h,-1,"Static",SS_BITMAP,9,6,125,41
+<br>ICON "MyIcon" -1, 20, 10,0,0
+<br>END</font></font>
+</dir>
+</dir>
+<p><b><h3>Defining statements</b></h3>
+<i>defining-statements give some further definition
+to each resource.</i>
+<br><i>There are three types of defining-statement:-</i>
+<dir>
+<dir>
+<dir><i>VERSION statement</i>
+<br><i>CHARACTERISTICS statement</i>
+<br><i>LANGUAGE statement</i>
+<br>
+<br></dir>
+</dir>
+</dir>
+<i>Each defining-statement is specific to the resource to which it refers,
+however if LANGUAGE is specified outside a specific resource it will apply
+to all resources thereafter.</i>
+<br>
+<br>
+<br>
+<b><a NAME="verc"></a>Version and Characteristics</b>
+<br><a href="#top">Back to top</a>
+<p>The syntax for these is the same:-
+<br>VERSION <i>value</i>
+<br>CHARACTERISTICS <i>value</i>
+<br>Where, <i>value </i>is:-
+<br>a 32-bit number
+<br>an expression which evaluates to a 32-bit number
+<br><i>value</i> is stored only in the RES file and not in
+the OBJ file nor in the EXE, so it cannot be recovered at run-time. However
+it could be read by tools which work with the RES file, such as the some
+linkers.
+<br>
+<br>
+<br><a NAME="lang"></a><b>Language</b>
+<br><a href="#top">Back to top</a>
+<p>The syntax of the LANGUAGE statement is:-
+<br>LANGUAGE <i>language, sublanguage</i>
+<p>This statement can appear anywhere in the script (outside
+a BEGIN...END section). In that case the specified language applies to
+all resources thereafter.
+<br>It can also appear between the resource statement itself
+and the BEGIN...END section as a <i>defining-statement</i>. In that case
+the specified language only applies to the resource in which it appears.
+The actual values for <i>language</i> and <i>sublanguage</i> appear in
+WINNT.H.
+<br>The most common values for <i>language </i>are LANG_ENGLISH
+(value 9h), and for <i>sublanguage </i>are SUBLANG_ENGLISH_US (value 1h),
+SUBLANG_ENGLISH_UK (value 2h), SUBLANG_ENGLISH_AUS (value 3h) and SUBLANG_ENGLISH_CAN
+(value 4h).
+<br>If no language is specified in your resource script the
+Resource Compiler uses the system language and inserts that in the binary
+resource file.
+<br>
+<p><b>Making different language versions of a resource</b>
+<br>If your product is to be used in more than one language,
+you will need to provide different menu and dialog text, warning and error
+messages to suit the language. The combined features of the Resource Compiler
+and the API make it reasonably easy to achieve this. The exact way this
+is achieved, in the context of resources, depends on whether you want:-
+<ul>
+<li>
+different EXE or DLL files for each language version, or</li>
+
+<li>
+several languages available from the same EXE</li>
+</ul>
+The first can be achieved by having different resource scripts,
+or by use of the conditional directives, which would instruct the Resource
+Compiler to compile only those parts of the resource script relevant to
+the desired language (see <i>conditional directives</i> above).
+<p>The second is possible because the API FindResource will
+automatically return the handle of the resource which suits the default
+system language for the computer which is running the program. FindResource
+does this by obtaining the default system language and then calling FindResourceEx.
+If you want to specify the language of the resource to be found, rather
+than relying on the system default language, then you can call FindResourceEx
+directly giving the language ID.
+<p>FindResource can be used as follows:-
+<dir>
+PUSH <i>resource type </i>&nbsp;&nbsp;;by type number or by name
+if a user-defined resource
+<br>PUSH <i>resource nameID </i>&nbsp;&nbsp;;use only a name identifier not
+a number
+<br>PUSH <i>hModule </i>&nbsp;&nbsp;;this is hInst or zero to use current
+process
+<br>CALL FindResource
+</dir>
+<p>FindResourceEx can be used as follows
+<dir>
+PUSH <i>resource language </i>&nbsp;&nbsp;;see below
+<br>PUSH <i>resource nameID </i>&nbsp;&nbsp;;use only a name identifier
+not a number
+<br>PUSH <i>resource type </i>&nbsp;&nbsp;;by type number or by name
+if a user-defined resource
+<br>PUSH <i>hModule </i>&nbsp;&nbsp;;this is hInst or zero to use current
+process
+<br>CALL FindResourceEx
+</dir>
+Note that the nameID and type parameters are reversed
+for FindResourceEx!
+<br>The <i>resource language</i> is a 32-bit value made up
+as follows:-
+<br>Least significant 10 bits - the primary language value:
+<br>Next 6 bits - the secondary language value
+<br>Most significant 16 bits - zero
+<br>For a list of the language values see WINNT.h
+<p>The return from FindResource and FindResourceEx is the
+handle which is needed for the call to LoadResource.. You can have several
+versions of a menu or dialog, for example, with the same <i>nameID</i>
+but with different languages specified. FindResource will return the handle
+of the correct one.
+<p><b>Language specific menus</b>
+<br>Since the FindResource (or FindResourceEx) and LoadResource
+combination provide an address to the resource data itself, in order to
+load a language specific menu, you need to pass that address as the menu
+template to LoadMenuIndirect. You cannot use LoadMenu to load a language
+specific menu.
+<p><b>Language specific dialogs</b>
+<br>Similarly, to make a language specific dialog box you
+need to pass the address of the dialog template returned by LoadResource
+to DialogBoxIndirect (modal) or CreateDialogIndirect (non-modal) rather
+than using the CreateDialog and DialogBox APIs. Other language specific
+components which are needed in your dialog should either be given a unique
+<i>nameID</i> or loaded at run-time. For example, if you have a French
+version of your dialog and want to include a French menu by using the MENU
+<i>defining-statement</i> in the resource script, a <i>nameID</i> must
+be given in the MENU statement which uniquely refers to the French menu.
+Alternatively if you have several language versions of the menu all with
+the same <i>nameID</i> you could load the menu at run-time upon the INIT_DIALOG
+message. This would be done by calling FindResource or FindResourceEx,
+then LoadResource (to get and address for the menu template of the correct
+menu), LoadMenuIndirect (to get the menu handle) and then SetMenu (to load
+the menu into the dialog box).
+<p><b>Language specific strings and raw data</b>
+<br>When loading language specific strings, you can use LoadString
+directly. This loads a string to suit the system default language. Alternatively
+the address of the string itself can be obtained using FindResource, or
+FindResourceEx and LoadResource.
+<br>The same method works for RCDATA and for a user-defined
+resource (and indeed for any resource which can be used by obtaining an
+address of the raw data of the resource).
+<p><b>Examples for viewing</b>
+<br>Testbug.Exe provides examples of loading language specific
+menus, dialogs, strings and raw data. The relevant functions to look at
+with the debugger are:-
+<br>Menus, dialogs and raw data example, click "use of resources/different
+language versions/various resources in English" or "same showing French
+versions" in the menu, watching with the debugger the functions RESOURCES_IN_ENGLISH
+and RESOURCES_IN_FRENCH, which create dialog boxes using the dlg wndproc
+called MDLangDlgProc.
+<br>Strings, click "Language specific string" in the menu,
+watching with the debugger the function STRINGTABLES_BY_LANGUAGE.
+<p><b>Language search criteria</b>
+<br>When searching for language specific resources, the system
+looks for a language match but has certain defaults if an exact match is
+not found. The system carries out the search for a resource of the correct
+type and ID in this order, moving down the list if the resource is not
+yet found:-
+<ul>
+<li>
+Match both of primary language and sublanguage</li>
+
+<li>
+Match on primary language only</li>
+
+<li>
+A primary language of LANG_NEUTRAL (value zero)</li>
+
+<li>
+A primary language of English</li>
+
+<li>
+Any language</li>
+</ul>
+Clearly if the exact specified language is not present in
+the EXE, FindResourceEx will provide some output provided the resource
+type and ID match. So there is no need to worry that your product will
+not work in the Land of the Wizard if you use language specific resources.
+<p><b>Own language values</b>
+<br>You can specify your own language values if you wish,
+and by this method it would be possible to make several versions of menus,
+dialogs and strings for your product in the <i>same</i> language if you
+wished, using the automatic language selection referred to above. To keep
+the system happy, ensure that your <i>language</i> value is between 200h
+and 3FFh, and the <i>sublanguage</i> value is between 20h and 3Fh. These
+values are carefully chosen. The actual languageID inserted in the binary
+resource file and kept in the EXE is only 16 bits long, the <i>language</i>
+value occupying the most significant 10 bits (hence a maximum value of
+3FFh) and the <i>sublanguage</i> value occupying the least significant
+6 bits (hence a maximum value of 3Fh).
+<br>
+<br>
+<dir>
+<dir><b><u>Example of the LANGUAGE
+statement</u></b>
+<br><font face="Courier New"><font size="-1">LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+<br>456h RCDATA
+<br>BEGIN
+<dir>
+<dir>"Hello world (in English)\0"</dir>
+</dir>
+END
+<p>456h RCDATA
+<br>LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+<br>BEGIN
+<dir>
+<dir>"Bonjour le monde (en Fran&ccedil;ais)\0"</dir>
+</dir>
+END
+<p>STRINGTABLE
+<br>BEGIN
+<dir>
+<dir>55h "An English string"</dir>
+</dir>
+END
+<p>LangMenu MENU
+<br>LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+<br>BEGIN
+<dir>
+<dir>MENUITEM "English menu item"
+22h</dir>
+</dir>
+END
+<p>LangMenu MENU
+<br>LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+<br>BEGIN
+<br>MENUITEM "Version Fran&ccedil;ais" 22h
+<br>END</font></font>
+<br>
+<br></dir>
+</dir>
+
+<p><a NAME="cap"></a><b>Capitalisation of nameIDs and types</b>
+<br><a href="#top">Back to top</a>
+<p>We have seen that a resource nameID can either be a string of 
+characters or a number.  For each type of resource with a 
+particular language the nameID must be unique.  Ie. two dialogs can have
+the same nameID provided they have different language values.
+<br>We have also seen that a user-defined resource will have a resource
+type identified by a string of characters or a number.
+<p>Now, the Resource Compiler will always convert the nameID or type
+to <i>upper case</i> when inserting them in the RES file or OBJ file.
+The reason for this is that this is expected by Windows.  In practice
+this does not affect the way you use the resource because the system will
+also capitalise any nameIDs or types given to the resource APIs.
+For example suppose you have a dialog with a nameID of "MyDlg".  Then
+to use the dialog you would pass the string "MyDlg" to the API
+CreateDialog.  But in fact, the system converts the string to MYDLG
+and then looks for that string (as converted) in the executable.
+<p>This has two implications which you may need to be aware of.
+<p>Firstly it means that there would be a conflict in the above example
+if you had a second dialog (with the same language value) called MYDLG.
+This would be picked up at link-time by the linker.
+<p>Secondly, the Resource Compiler must ensure that not only English 
+nameIDs or user-defined types are converted properly to upper case.
+So the Resource Compiler relies on the API CharUpper to do this conversion.
+This API can handle a number of languages properly, but it does rely
+on language mapping.  Ensure that the machine used for compiling does
+support the language used in the nameIDs and user-defined types.
+Many languages do not actually have an upper case at all, in which case
+no conversion will take place.
+
+<hr=50%>
+<br><a href="#top">Back to top</a>
+<a NAME="legal"></a><h2>Legal stuff</h2>
+<h3>Copyright</h3>
+GoRC is Copyright &copy; Jeremy Gordon 1997-2004 [MrDuck Software] - all rights
+reserved.  
+<h3>GoRC - licence and distribution</h3>
+You may use GoRC for any purpose including making commercial programs.  
+You may redistribute it freely (but not for payment nor for use with a 
+program or any material for which the user is asked to pay). 
+You are not entitled to hide or deny my copyright.
+<h3>Disclaimer</h3>
+I have made every effort to ensure that GoRC's output is
+accurate, but you do use it entirely at your own risk.  I cannot  
+accept any liability for it failing to work properly or giving
+the wrong output nor for any errors in this manual.
+
+</body>
+</html>

@@ -1,0 +1,2104 @@
+This is nasm.info, produced by makeinfo version 4.7 from nasmdoc.texi.
+
+INFO-DIR-SECTION Programming
+START-INFO-DIR-ENTRY
+* NASM: (nasm).                The Netwide Assembler for x86.
+END-INFO-DIR-ENTRY
+
+   This file documents NASM, the Netwide Assembler: an assembler
+targetting the Intel x86 series of processors, with portable source.
+
+   Copyright 2003 The NASM Development Team
+
+   All rights reserved. This document is redistributable under the
+licence given in the file "COPYING" distributed in the NASM archive.
+
+
+File: nasm.info,  Node: Section B.4.303,  Next: Section B.4.304,  Prev: Section B.4.302,  Up: Section B.4
+
+B.4.303. `STOSB', `STOSW', `STOSD': Store Byte to String
+--------------------------------------------------------
+
+     STOSB                         ; AA                   [8086]
+     STOSW                         ; o16 AB               [8086]
+     STOSD                         ; o32 AB               [386]
+
+   `STOSB' stores the byte in `AL' at `[ES:DI]' or `[ES:EDI]', and sets
+the flags accordingly. It then increments or decrements (depending on
+the direction flag: increments if the flag is clear, decrements if it
+is set) `DI' (or `EDI').
+
+   The register used is `DI' if the address size is 16 bits, and `EDI'
+if it is 32 bits. If you need to use an address size not equal to the
+current `BITS' setting, you can use an explicit `a16' or `a32' prefix.
+
+   Segment override prefixes have no effect for this instruction: the
+use of `ES' for the store to `[DI]' or `[EDI]' cannot be overridden.
+
+   `STOSW' and `STOSD' work in the same way, but they store the word in
+`AX' or the doubleword in `EAX' instead of the byte in `AL', and
+increment or decrement the addressing registers by 2 or 4 instead of 1.
+
+   The `REP' prefix may be used to repeat the instruction `CX' (or
+`ECX' - again, the address size chooses which) times.
+
+
+File: nasm.info,  Node: Section B.4.304,  Next: Section B.4.305,  Prev: Section B.4.303,  Up: Section B.4
+
+B.4.304. `STR': Store Task Register
+-----------------------------------
+
+     STR r/m16                     ; 0F 00 /1             [286,PRIV]
+
+   `STR' stores the segment selector corresponding to the contents of
+the Task Register into its operand. When the operand size is 32 bit and
+the destination is a register, the upper 16-bits are cleared to 0s.
+When the destination operand is a memory location, 16 bits are written
+regardless of the operand size.
+
+
+File: nasm.info,  Node: Section B.4.305,  Next: Section B.4.306,  Prev: Section B.4.304,  Up: Section B.4
+
+B.4.305. `SUB': Subtract Integers
+---------------------------------
+
+     SUB r/m8,reg8                 ; 28 /r                [8086]
+     SUB r/m16,reg16               ; o16 29 /r            [8086]
+     SUB r/m32,reg32               ; o32 29 /r            [386]
+
+     SUB reg8,r/m8                 ; 2A /r                [8086]
+     SUB reg16,r/m16               ; o16 2B /r            [8086]
+     SUB reg32,r/m32               ; o32 2B /r            [386]
+
+     SUB r/m8,imm8                 ; 80 /5 ib             [8086]
+     SUB r/m16,imm16               ; o16 81 /5 iw         [8086]
+     SUB r/m32,imm32               ; o32 81 /5 id         [386]
+
+     SUB r/m16,imm8                ; o16 83 /5 ib         [8086]
+     SUB r/m32,imm8                ; o32 83 /5 ib         [386]
+
+     SUB AL,imm8                   ; 2C ib                [8086]
+     SUB AX,imm16                  ; o16 2D iw            [8086]
+     SUB EAX,imm32                 ; o32 2D id            [386]
+
+   `SUB' performs integer subtraction: it subtracts its second operand
+from its first, and leaves the result in its destination (first)
+operand.  The flags are set according to the result of the operation:
+in particular, the carry flag is affected and can be used by a
+subsequent `SBB' instruction (*Note Section B.4.285::).
+
+   In the forms with an 8-bit immediate second operand and a longer
+first operand, the second operand is considered to be signed, and is
+sign- extended to the length of the first operand. In these cases, the
+`BYTE' qualifier is necessary to force NASM to generate this form of
+the instruction.
+
+
+File: nasm.info,  Node: Section B.4.306,  Next: Section B.4.307,  Prev: Section B.4.305,  Up: Section B.4
+
+B.4.306. `SUBPD': Packed Double-Precision FP Subtract
+-----------------------------------------------------
+
+     SUBPD xmm1,xmm2/m128          ; 66 0F 5C /r     [WILLAMETTE,SSE2]
+
+   `SUBPD' subtracts the packed double-precision FP values of the source
+operand from those of the destination operand, and stores the result in
+the destination operation.
+
+
+File: nasm.info,  Node: Section B.4.307,  Next: Section B.4.308,  Prev: Section B.4.306,  Up: Section B.4
+
+B.4.307. `SUBPS': Packed Single-Precision FP Subtract
+-----------------------------------------------------
+
+     SUBPS xmm1,xmm2/m128          ; 0F 5C /r        [KATMAI,SSE]
+
+   `SUBPS' subtracts the packed single-precision FP values of the source
+operand from those of the destination operand, and stores the result in
+the destination operation.
+
+
+File: nasm.info,  Node: Section B.4.308,  Next: Section B.4.309,  Prev: Section B.4.307,  Up: Section B.4
+
+B.4.308. `SUBSD': Scalar Single-FP Subtract
+-------------------------------------------
+
+     SUBSD xmm1,xmm2/m128          ; F2 0F 5C /r     [WILLAMETTE,SSE2]
+
+   `SUBSD' subtracts the low-order double-precision FP value of the
+source operand from that of the destination operand, and stores the
+result in the destination operation. The high quadword is unchanged.
+
+
+File: nasm.info,  Node: Section B.4.309,  Next: Section B.4.310,  Prev: Section B.4.308,  Up: Section B.4
+
+B.4.309. `SUBSS': Scalar Single-FP Subtract
+-------------------------------------------
+
+     SUBSS xmm1,xmm2/m128          ; F3 0F 5C /r     [KATMAI,SSE]
+
+   `SUBSS' subtracts the low-order single-precision FP value of the
+source operand from that of the destination operand, and stores the
+result in the destination operation. The three high doublewords are
+unchanged.
+
+
+File: nasm.info,  Node: Section B.4.310,  Next: Section B.4.311,  Prev: Section B.4.309,  Up: Section B.4
+
+B.4.310. `SVDC': Save Segment Register and Descriptor
+-----------------------------------------------------
+
+     SVDC m80,segreg               ; 0F 78 /r        [486,CYRIX,SMM]
+
+   `SVDC' saves a segment register (DS, ES, FS, GS, or SS) and its
+descriptor to mem80.
+
+
+File: nasm.info,  Node: Section B.4.311,  Next: Section B.4.312,  Prev: Section B.4.310,  Up: Section B.4
+
+B.4.311. `SVLDT': Save LDTR and Descriptor
+------------------------------------------
+
+     SVLDT m80                     ; 0F 7A /0        [486,CYRIX,SMM]
+
+   `SVLDT' saves the Local Descriptor Table (LDTR) to mem80.
+
+
+File: nasm.info,  Node: Section B.4.312,  Next: Section B.4.313,  Prev: Section B.4.311,  Up: Section B.4
+
+B.4.312. `SVTS': Save TSR and Descriptor
+----------------------------------------
+
+     SVTS m80                      ; 0F 7C /0        [486,CYRIX,SMM]
+
+   `SVTS' saves the Task State Register (TSR) to mem80.
+
+
+File: nasm.info,  Node: Section B.4.313,  Next: Section B.4.314,  Prev: Section B.4.312,  Up: Section B.4
+
+B.4.313. `SYSCALL': Call Operating System
+-----------------------------------------
+
+     SYSCALL                       ; 0F 05                [P6,AMD]
+
+   `SYSCALL' provides a fast method of transferring control to a fixed
+entry point in an operating system.
+
+   * The `EIP' register is copied into the `ECX' register.
+
+   * Bits [31-0] of the 64-bit SYSCALL/SYSRET Target Address Register
+     (`STAR') are copied into the `EIP' register.
+
+   * Bits [47-32] of the `STAR' register specify the selector that is
+     copied into the `CS' register.
+
+   * Bits [47-32]+1000b of the `STAR' register specify the selector
+     that is copied into the SS register.
+
+   The `CS' and `SS' registers should not be modified by the operating
+system between the execution of the `SYSCALL' instruction and its
+corresponding `SYSRET' instruction.
+
+   For more information, see the `SYSCALL and SYSRET Instruction
+Specification' (AMD document number 21086.pdf).
+
+
+File: nasm.info,  Node: Section B.4.314,  Next: Section B.4.315,  Prev: Section B.4.313,  Up: Section B.4
+
+B.4.314. `SYSENTER': Fast System Call
+-------------------------------------
+
+     SYSENTER                      ; 0F 34                [P6]
+
+   `SYSENTER' executes a fast call to a level 0 system procedure or
+routine. Before using this instruction, various MSRs need to be set up:
+
+   * `SYSENTER_CS_MSR' contains the 32-bit segment selector for the
+     privilege level 0 code segment. (This value is also used to
+     compute the segment selector of the privilege level 0 stack
+     segment.)
+
+   * `SYSENTER_EIP_MSR' contains the 32-bit offset into the privilege
+     level 0 code segment to the first instruction of the selected
+     operating procedure or routine.
+
+   * `SYSENTER_ESP_MSR' contains the 32-bit stack pointer for the
+     privilege level 0 stack.
+
+   `SYSENTER' performs the following sequence of operations:
+
+   * Loads the segment selector from the `SYSENTER_CS_MSR' into the
+     `CS' register.
+
+   * Loads the instruction pointer from the `SYSENTER_EIP_MSR' into the
+     `EIP' register.
+
+   * Adds 8 to the value in `SYSENTER_CS_MSR' and loads it into the
+     `SS' register.
+
+   * Loads the stack pointer from the `SYSENTER_ESP_MSR' into the `ESP'
+     register.
+
+   * Switches to privilege level 0.
+
+   * Clears the `VM' flag in the `EFLAGS' register, if the flag is set.
+
+   * Begins executing the selected system procedure.
+
+   In particular, note that this instruction des not save the values of
+`CS' or `(E)IP'. If you need to return to the calling code, you need to
+write your code to cater for this.
+
+   For more information, see the Intel Architecture Software Developer's
+Manual, Volume 2.
+
+
+File: nasm.info,  Node: Section B.4.315,  Next: Section B.4.316,  Prev: Section B.4.314,  Up: Section B.4
+
+B.4.315. `SYSEXIT': Fast Return From System Call
+------------------------------------------------
+
+     SYSEXIT                       ; 0F 35                [P6,PRIV]
+
+   `SYSEXIT' executes a fast return to privilege level 3 user code. This
+instruction is a companion instruction to the `SYSENTER' instruction,
+and can only be executed by privilege level 0 code. Various registers
+need to be set up before calling this instruction:
+
+   * `SYSENTER_CS_MSR' contains the 32-bit segment selector for the
+     privilege level 0 code segment in which the processor is currently
+     executing. (This value is used to compute the segment selectors
+     for the privilege level 3 code and stack segments.)
+
+   * `EDX' contains the 32-bit offset into the privilege level 3 code
+     segment to the first instruction to be executed in the user code.
+
+   * `ECX' contains the 32-bit stack pointer for the privilege level 3
+     stack.
+
+   `SYSEXIT' performs the following sequence of operations:
+
+   * Adds 16 to the value in `SYSENTER_CS_MSR' and loads the sum into
+     the `CS' selector register.
+
+   * Loads the instruction pointer from the `EDX' register into the
+     `EIP' register.
+
+   * Adds 24 to the value in `SYSENTER_CS_MSR' and loads the sum into
+     the `SS' selector register.
+
+   * Loads the stack pointer from the `ECX' register into the `ESP'
+     register.
+
+   * Switches to privilege level 3.
+
+   * Begins executing the user code at the `EIP' address.
+
+   For more information on the use of the `SYSENTER' and `SYSEXIT'
+instructions, see the Intel Architecture Software Developer's Manual,
+Volume 2.
+
+
+File: nasm.info,  Node: Section B.4.316,  Next: Section B.4.317,  Prev: Section B.4.315,  Up: Section B.4
+
+B.4.316. `SYSRET': Return From Operating System
+-----------------------------------------------
+
+     SYSRET                        ; 0F 07                [P6,AMD,PRIV]
+
+   `SYSRET' is the return instruction used in conjunction with the
+`SYSCALL' instruction to provide fast entry/exit to an operating system.
+
+   * The `ECX' register, which points to the next sequential instruction
+     after the corresponding `SYSCALL' instruction, is copied into the
+     `EIP' register.
+
+   * Bits [63-48] of the `STAR' register specify the selector that is
+     copied into the `CS' register.
+
+   * Bits [63-48]+1000b of the `STAR' register specify the selector
+     that is copied into the `SS' register.
+
+   * Bits [1-0] of the `SS' register are set to 11b (RPL of 3)
+     regardless of the value of bits [49-48] of the `STAR' register.
+
+   The `CS' and `SS' registers should not be modified by the operating
+system between the execution of the `SYSCALL' instruction and its
+corresponding `SYSRET' instruction.
+
+   For more information, see the `SYSCALL and SYSRET Instruction
+Specification' (AMD document number 21086.pdf).
+
+
+File: nasm.info,  Node: Section B.4.317,  Next: Section B.4.318,  Prev: Section B.4.316,  Up: Section B.4
+
+B.4.317. `TEST': Test Bits (notional bitwise AND)
+-------------------------------------------------
+
+     TEST r/m8,reg8                ; 84 /r                [8086]
+     TEST r/m16,reg16              ; o16 85 /r            [8086]
+     TEST r/m32,reg32              ; o32 85 /r            [386]
+
+     TEST r/m8,imm8                ; F6 /0 ib             [8086]
+     TEST r/m16,imm16              ; o16 F7 /0 iw         [8086]
+     TEST r/m32,imm32              ; o32 F7 /0 id         [386]
+
+     TEST AL,imm8                  ; A8 ib                [8086]
+     TEST AX,imm16                 ; o16 A9 iw            [8086]
+     TEST EAX,imm32                ; o32 A9 id            [386]
+
+   `TEST' performs a `mental' bitwise AND of its two operands, and
+affects the flags as if the operation had taken place, but does not
+store the result of the operation anywhere.
+
+
+File: nasm.info,  Node: Section B.4.318,  Next: Section B.4.319,  Prev: Section B.4.317,  Up: Section B.4
+
+B.4.318. `UCOMISD': Unordered Scalar Double-Precision FP compare and set EFLAGS
+-------------------------------------------------------------------------------
+
+     UCOMISD xmm1,xmm2/m128        ; 66 0F 2E /r     [WILLAMETTE,SSE2]
+
+   `UCOMISD' compares the low-order double-precision FP numbers in the
+two operands, and sets the `ZF', `PF' and `CF' bits in the `EFLAGS'
+register. In addition, the `OF', `SF' and `AF' bits in the `EFLAGS'
+register are zeroed out. The unordered predicate (`ZF', `PF' and `CF'
+all set) is returned if either source operand is a `NaN' (`qNaN' or
+`sNaN').
+
+
+File: nasm.info,  Node: Section B.4.319,  Next: Section B.4.320,  Prev: Section B.4.318,  Up: Section B.4
+
+B.4.319. `UCOMISS': Unordered Scalar Single-Precision FP compare and set EFLAGS
+-------------------------------------------------------------------------------
+
+     UCOMISS xmm1,xmm2/m128        ; 0F 2E /r        [KATMAI,SSE]
+
+   `UCOMISS' compares the low-order single-precision FP numbers in the
+two operands, and sets the `ZF', `PF' and `CF' bits in the `EFLAGS'
+register. In addition, the `OF', `SF' and `AF' bits in the `EFLAGS'
+register are zeroed out. The unordered predicate (`ZF', `PF' and `CF'
+all set) is returned if either source operand is a `NaN' (`qNaN' or
+`sNaN').
+
+
+File: nasm.info,  Node: Section B.4.320,  Next: Section B.4.321,  Prev: Section B.4.319,  Up: Section B.4
+
+B.4.320. `UD0', `UD1', `UD2': Undefined Instruction
+---------------------------------------------------
+
+     UD0                           ; 0F FF                [186,UNDOC]
+     UD1                           ; 0F B9                [186,UNDOC]
+     UD2                           ; 0F 0B                [186]
+
+   `UDx' can be used to generate an invalid opcode exception, for
+testing purposes.
+
+   `UD0' is specifically documented by AMD as being reserved for this
+purpose.
+
+   `UD1' is documented by Intel as being available for this purpose.
+
+   `UD2' is specifically documented by Intel as being reserved for this
+purpose. Intel document this as the preferred method of generating an
+invalid opcode exception.
+
+   All these opcodes can be used to generate invalid opcode exceptions
+on all currently available processors.
+
+
+File: nasm.info,  Node: Section B.4.321,  Next: Section B.4.322,  Prev: Section B.4.320,  Up: Section B.4
+
+B.4.321. `UMOV': User Move Data
+-------------------------------
+
+     UMOV r/m8,reg8                ; 0F 10 /r             [386,UNDOC]
+     UMOV r/m16,reg16              ; o16 0F 11 /r         [386,UNDOC]
+     UMOV r/m32,reg32              ; o32 0F 11 /r         [386,UNDOC]
+
+     UMOV reg8,r/m8                ; 0F 12 /r             [386,UNDOC]
+     UMOV reg16,r/m16              ; o16 0F 13 /r         [386,UNDOC]
+     UMOV reg32,r/m32              ; o32 0F 13 /r         [386,UNDOC]
+
+   This undocumented instruction is used by in-circuit emulators to
+access user memory (as opposed to host memory). It is used just like an
+ordinary memory/register or register/register `MOV' instruction, but
+accesses user space.
+
+   This instruction is only available on some AMD and IBM 386 and 486
+processors.
+
+
+File: nasm.info,  Node: Section B.4.322,  Next: Section B.4.323,  Prev: Section B.4.321,  Up: Section B.4
+
+B.4.322. `UNPCKHPD': Unpack and Interleave High Packed Double-Precision FP Values
+---------------------------------------------------------------------------------
+
+     UNPCKHPD xmm1,xmm2/m128       ; 66 0F 15 /r     [WILLAMETTE,SSE2]
+
+   `UNPCKHPD' performs an interleaved unpack of the high-order data
+elements of the source and destination operands, saving the result in
+`xmm1'. It ignores the lower half of the sources.
+
+   The operation of this instruction is:
+
+        dst[63-0]   := dst[127-64];
+        dst[127-64] := src[127-64].
+
+
+File: nasm.info,  Node: Section B.4.323,  Next: Section B.4.324,  Prev: Section B.4.322,  Up: Section B.4
+
+B.4.323. `UNPCKHPS': Unpack and Interleave High Packed Single-Precision FP Values
+---------------------------------------------------------------------------------
+
+     UNPCKHPS xmm1,xmm2/m128       ; 0F 15 /r        [KATMAI,SSE]
+
+   `UNPCKHPS' performs an interleaved unpack of the high-order data
+elements of the source and destination operands, saving the result in
+`xmm1'. It ignores the lower half of the sources.
+
+   The operation of this instruction is:
+
+        dst[31-0]   := dst[95-64];
+        dst[63-32]  := src[95-64];
+        dst[95-64]  := dst[127-96];
+        dst[127-96] := src[127-96].
+
+
+File: nasm.info,  Node: Section B.4.324,  Next: Section B.4.325,  Prev: Section B.4.323,  Up: Section B.4
+
+B.4.324. `UNPCKLPD': Unpack and Interleave Low Packed Double-Precision FP Data
+------------------------------------------------------------------------------
+
+     UNPCKLPD xmm1,xmm2/m128       ; 66 0F 14 /r     [WILLAMETTE,SSE2]
+
+   `UNPCKLPD' performs an interleaved unpack of the low-order data
+elements of the source and destination operands, saving the result in
+`xmm1'. It ignores the lower half of the sources.
+
+   The operation of this instruction is:
+
+        dst[63-0]   := dst[63-0];
+        dst[127-64] := src[63-0].
+
+
+File: nasm.info,  Node: Section B.4.325,  Next: Section B.4.326,  Prev: Section B.4.324,  Up: Section B.4
+
+B.4.325. `UNPCKLPS': Unpack and Interleave Low Packed Single-Precision FP Data
+------------------------------------------------------------------------------
+
+     UNPCKLPS xmm1,xmm2/m128       ; 0F 14 /r        [KATMAI,SSE]
+
+   `UNPCKLPS' performs an interleaved unpack of the low-order data
+elements of the source and destination operands, saving the result in
+`xmm1'. It ignores the lower half of the sources.
+
+   The operation of this instruction is:
+
+        dst[31-0]   := dst[31-0];
+        dst[63-32]  := src[31-0];
+        dst[95-64]  := dst[63-32];
+        dst[127-96] := src[63-32].
+
+
+File: nasm.info,  Node: Section B.4.326,  Next: Section B.4.327,  Prev: Section B.4.325,  Up: Section B.4
+
+B.4.326. `VERR', `VERW': Verify Segment Readability/Writability
+---------------------------------------------------------------
+
+     VERR r/m16                    ; 0F 00 /4             [286,PRIV]
+
+     VERW r/m16                    ; 0F 00 /5             [286,PRIV]
+
+   * `VERR' sets the zero flag if the segment specified by the selector
+     in its operand can be read from at the current privilege level.
+     Otherwise it is cleared.
+
+   * `VERW' sets the zero flag if the segment can be written.
+
+
+File: nasm.info,  Node: Section B.4.327,  Next: Section B.4.328,  Prev: Section B.4.326,  Up: Section B.4
+
+B.4.327. `WAIT': Wait for Floating-Point Processor
+--------------------------------------------------
+
+     WAIT                          ; 9B                   [8086]
+     FWAIT                         ; 9B                   [8086]
+
+   `WAIT', on 8086 systems with a separate 8087 FPU, waits for the FPU
+to have finished any operation it is engaged in before continuing main
+processor operations, so that (for example) an FPU store to main memory
+can be guaranteed to have completed before the CPU tries to read the
+result back out.
+
+   On higher processors, `WAIT' is unnecessary for this purpose, and it
+has the alternative purpose of ensuring that any pending unmasked FPU
+exceptions have happened before execution continues.
+
+
+File: nasm.info,  Node: Section B.4.328,  Next: Section B.4.329,  Prev: Section B.4.327,  Up: Section B.4
+
+B.4.328. `WBINVD': Write Back and Invalidate Cache
+--------------------------------------------------
+
+     WBINVD                        ; 0F 09                [486]
+
+   `WBINVD' invalidates and empties the processor's internal caches, and
+causes the processor to instruct external caches to do the same. It
+writes the contents of the caches back to memory first, so no data is
+lost. To flush the caches quickly without bothering to write the data
+back first, use `INVD' (*Note Section B.4.125::).
+
+
+File: nasm.info,  Node: Section B.4.329,  Next: Section B.4.330,  Prev: Section B.4.328,  Up: Section B.4
+
+B.4.329. `WRMSR': Write Model-Specific Registers
+------------------------------------------------
+
+     WRMSR                         ; 0F 30                [PENT]
+
+   `WRMSR' writes the value in `EDX:EAX' to the processor Model-
+Specific Register (MSR) whose index is stored in `ECX'. See also
+`RDMSR' (*Note Section B.4.270::).
+
+
+File: nasm.info,  Node: Section B.4.330,  Next: Section B.4.331,  Prev: Section B.4.329,  Up: Section B.4
+
+B.4.330. `WRSHR': Write SMM Header Pointer Register
+---------------------------------------------------
+
+     WRSHR r/m32                   ; 0F 37 /0        [386,CYRIX,SMM]
+
+   `WRSHR' loads the contents of either a 32-bit memory location or a
+32- bit register into the SMM header pointer register.
+
+   See also `RDSHR' (*Note Section B.4.272::).
+
+
+File: nasm.info,  Node: Section B.4.331,  Next: Section B.4.332,  Prev: Section B.4.330,  Up: Section B.4
+
+B.4.331. `XADD': Exchange and Add
+---------------------------------
+
+     XADD r/m8,reg8                ; 0F C0 /r             [486]
+     XADD r/m16,reg16              ; o16 0F C1 /r         [486]
+     XADD r/m32,reg32              ; o32 0F C1 /r         [486]
+
+   `XADD' exchanges the values in its two operands, and then adds them
+together and writes the result into the destination (first) operand.
+This instruction can be used with a `LOCK' prefix for multi-processor
+synchronisation purposes.
+
+
+File: nasm.info,  Node: Section B.4.332,  Next: Section B.4.333,  Prev: Section B.4.331,  Up: Section B.4
+
+B.4.332. `XBTS': Extract Bit String
+-----------------------------------
+
+     XBTS reg16,r/m16              ; o16 0F A6 /r         [386,UNDOC]
+     XBTS reg32,r/m32              ; o32 0F A6 /r         [386,UNDOC]
+
+   The implied operation of this instruction is:
+
+     XBTS r/m16,reg16,AX,CL
+     XBTS r/m32,reg32,EAX,CL
+
+   Writes a bit string from the source operand to the destination. `CL'
+indicates the number of bits to be copied, and `(E)AX' indicates the
+low order bit offset in the source. The bits are written to the low
+order bits of the destination register. For example, if `CL' is set to
+4 and `AX' (for 16-bit code) is set to 5, bits 5-8 of `src' will be
+copied to bits 0-3 of `dst'. This instruction is very poorly
+documented, and I have been unable to find any official source of
+documentation on it.
+
+   `XBTS' is supported only on the early Intel 386s, and conflicts with
+the opcodes for `CMPXCHG486' (on early Intel 486s). NASM supports it
+only for completeness. Its counterpart is `IBTS' (see *Note Section
+B.4.116::).
+
+
+File: nasm.info,  Node: Section B.4.333,  Next: Section B.4.334,  Prev: Section B.4.332,  Up: Section B.4
+
+B.4.333. `XCHG': Exchange
+-------------------------
+
+     XCHG reg8,r/m8                ; 86 /r                [8086]
+     XCHG reg16,r/m8               ; o16 87 /r            [8086]
+     XCHG reg32,r/m32              ; o32 87 /r            [386]
+
+     XCHG r/m8,reg8                ; 86 /r                [8086]
+     XCHG r/m16,reg16              ; o16 87 /r            [8086]
+     XCHG r/m32,reg32              ; o32 87 /r            [386]
+
+     XCHG AX,reg16                 ; o16 90+r             [8086]
+     XCHG EAX,reg32                ; o32 90+r             [386]
+     XCHG reg16,AX                 ; o16 90+r             [8086]
+     XCHG reg32,EAX                ; o32 90+r             [386]
+
+   `XCHG' exchanges the values in its two operands. It can be used with
+a `LOCK' prefix for purposes of multi-processor synchronisation.
+
+   `XCHG AX,AX' or `XCHG EAX,EAX' (depending on the `BITS' setting)
+generates the opcode `90h', and so is a synonym for `NOP' (*Note
+Section B.4.190::).
+
+
+File: nasm.info,  Node: Section B.4.334,  Next: Section B.4.335,  Prev: Section B.4.333,  Up: Section B.4
+
+B.4.334. `XLATB': Translate Byte in Lookup Table
+------------------------------------------------
+
+     XLAT                          ; D7                   [8086]
+     XLATB                         ; D7                   [8086]
+
+   `XLATB' adds the value in `AL', treated as an unsigned byte, to `BX'
+or `EBX', and loads the byte from the resulting address (in the segment
+specified by `DS') back into `AL'.
+
+   The base register used is `BX' if the address size is 16 bits, and
+`EBX' if it is 32 bits. If you need to use an address size not equal to
+the current `BITS' setting, you can use an explicit `a16' or `a32'
+prefix.
+
+   The segment register used to load from `[BX+AL]' or `[EBX+AL]' can
+be overridden by using a segment register name as a prefix (for
+example, `es xlatb').
+
+
+File: nasm.info,  Node: Section B.4.335,  Next: Section B.4.336,  Prev: Section B.4.334,  Up: Section B.4
+
+B.4.335. `XOR': Bitwise Exclusive OR
+------------------------------------
+
+     XOR r/m8,reg8                 ; 30 /r                [8086]
+     XOR r/m16,reg16               ; o16 31 /r            [8086]
+     XOR r/m32,reg32               ; o32 31 /r            [386]
+
+     XOR reg8,r/m8                 ; 32 /r                [8086]
+     XOR reg16,r/m16               ; o16 33 /r            [8086]
+     XOR reg32,r/m32               ; o32 33 /r            [386]
+
+     XOR r/m8,imm8                 ; 80 /6 ib             [8086]
+     XOR r/m16,imm16               ; o16 81 /6 iw         [8086]
+     XOR r/m32,imm32               ; o32 81 /6 id         [386]
+
+     XOR r/m16,imm8                ; o16 83 /6 ib         [8086]
+     XOR r/m32,imm8                ; o32 83 /6 ib         [386]
+
+     XOR AL,imm8                   ; 34 ib                [8086]
+     XOR AX,imm16                  ; o16 35 iw            [8086]
+     XOR EAX,imm32                 ; o32 35 id            [386]
+
+   `XOR' performs a bitwise XOR operation between its two operands (i.e.
+each bit of the result is 1 if and only if exactly one of the
+corresponding bits of the two inputs was 1), and stores the result in
+the destination (first) operand.
+
+   In the forms with an 8-bit immediate second operand and a longer
+first operand, the second operand is considered to be signed, and is
+sign- extended to the length of the first operand. In these cases, the
+`BYTE' qualifier is necessary to force NASM to generate this form of
+the instruction.
+
+   The `MMX' instruction `PXOR' (see *Note Section B.4.266::) performs
+the same operation on the 64-bit `MMX' registers.
+
+
+File: nasm.info,  Node: Section B.4.336,  Next: Section B.4.337,  Prev: Section B.4.335,  Up: Section B.4
+
+B.4.336. `XORPD': Bitwise Logical XOR of Double-Precision FP Values
+-------------------------------------------------------------------
+
+     XORPD xmm1,xmm2/m128          ; 66 0F 57 /r     [WILLAMETTE,SSE2]
+
+   `XORPD' returns a bit-wise logical XOR between the source and
+destination operands, storing the result in the destination operand.
+
+
+File: nasm.info,  Node: Section B.4.337,  Prev: Section B.4.336,  Up: Section B.4
+
+B.4.337. `XORPS': Bitwise Logical XOR of Single-Precision FP Values
+-------------------------------------------------------------------
+
+     XORPS xmm1,xmm2/m128          ; 0F 57 /r        [KATMAI,SSE]
+
+   `XORPS' returns a bit-wise logical XOR between the source and
+destination operands, storing the result in the destination operand.
+
+
+File: nasm.info,  Node: Index,  Up: Top
+
+Index
+*****
+
+* Menu:
+
+* `!=' operator                            (1): Section 4.4.4.
+* `$$' token                               (1): Section 3.5.
+* `$$' token                               (2): Section 6.5.2.
+* `$', Here token                          (1): Section 3.5.
+* `$', prefix                              (1): Section 3.1.
+* `$', prefix                              (2): Section 3.4.1.
+* `$', prefix                              (3): Section 6.9.2.
+* `%' operator                             (1): Section 3.5.6.
+* `%!'                                     (1): Section 4.10.2.
+* `%$' and `%$$' prefixes                  (1): Section 4.7.2.
+* `%%' operator                            (1): Section 3.5.6.
+* `%%' operator                            (2): Section 4.3.2.
+* `%+'                                     (1): Section 4.1.3.
+* `%+1' and `%-1' syntax                   (1): Section 4.3.8.
+* `%0' parameter count                     (1): Section 4.3.4.
+* `%0' parameter count                     (2): Section 4.3.5.
+* `&' operator                             (1): Section 3.5.3.
+* `&&' operator                            (1): Section 4.4.4.
+* `*' operator                             (1): Section 3.5.6.
+* `+' modifier                             (1): Section 4.3.3.
+* `+' operator, binary                     (1): Section 3.5.5.
+* `+' operator, unary                      (1): Section 3.5.7.
+* `-' operator, binary                     (1): Section 3.5.5.
+* `-' operator, unary                      (1): Section 3.5.7.
+* `..@' symbol prefix                      (1): Section 3.9.
+* `..@' symbol prefix                      (2): Section 4.3.2.
+* `/' operator                             (1): Section 3.5.6.
+* `//' operator                            (1): Section 3.5.6.
+* `<' operator                             (1): Section 4.4.4.
+* `<<' operator                            (1): Section 3.5.4.
+* `<=' operator                            (1): Section 4.4.4.
+* `<>' operator                            (1): Section 4.4.4.
+* `=' operator                             (1): Section 4.4.4.
+* `==' operator                            (1): Section 4.4.4.
+* `>' operator                             (1): Section 4.4.4.
+* `>=' operator                            (1): Section 4.4.4.
+* `>>' operator                            (1): Section 3.5.4.
+* `?' MASM syntax                          (1): Section 3.2.2.
+* `^' operator                             (1): Section 3.5.2.
+* `^^' operator                            (1): Section 4.4.4.
+* `|' operator                             (1): Section 3.5.1.
+* `||' operator                            (1): Section 4.4.4.
+* `~' operator                             (1): Section 3.5.7.
+* `-a' option                              (1): Section 2.1.15.
+* `-a' option                              (2): Section A.3.3.
+* `a16'                                    (1): Section 9.3.
+* `a16'                                    (2): Section B.4.27.
+* `a16'                                    (3): Section B.4.121.
+* `a16'                                    (4): Section B.4.141.
+* `a16'                                    (5): Section B.4.178.
+* `a16'                                    (6): Section B.4.195.
+* `a16'                                    (7): Section B.4.244.
+* `a16'                                    (8): Section B.4.263.
+* `a16'                                    (9): Section B.4.286.
+* `a16'                                    (A): Section B.4.303.
+* `a16'                                    (B): Section B.4.334.
+* `a32'                                    (1): Section 9.3.
+* `a32'                                    (2): Section B.4.27.
+* `a32'                                    (3): Section B.4.121.
+* `a32'                                    (4): Section B.4.141.
+* `a32'                                    (5): Section B.4.178.
+* `a32'                                    (6): Section B.4.195.
+* `a32'                                    (7): Section B.4.244.
+* `a32'                                    (8): Section B.4.263.
+* `a32'                                    (9): Section B.4.286.
+* `a32'                                    (A): Section B.4.303.
+* `a32'                                    (B): Section B.4.334.
+* `a86'                                    (1): Section 1.1.1.
+* `a86'                                    (2): Section 2.2.
+* `a86'                                    (3): Section 2.2.2.
+* `a86'                                    (4): Section 2.2.6.
+* `AAA'                                    (1): Section B.4.1.
+* `AAD'                                    (1): Section B.4.1.
+* `AAM'                                    (1): Section B.4.1.
+* `AAS'                                    (1): Section B.4.1.
+* `ABSOLUTE'                               (1): Section 5.3.
+* `ABSOLUTE'                               (2): Section 6.2.1.
+* `ADC'                                    (1): Section B.4.2.
+* `ADD'                                    (1): Section B.4.3.
+* addition                                 (1): Section 3.5.5.
+* `ADDPD'                                  (1): Section B.4.4.
+* `ADDPS'                                  (1): Section B.4.5.
+* addressing, mixed-size                   (1): Section 9.2.
+* address-size prefixes                    (1): Section 3.1.
+* `ADDSD'                                  (1): Section B.4.6.
+* `ADDSS'                                  (1): Section B.4.7.
+* algebra                                  (1): Section 3.3.
+* `ALIGN'                                  (1): Section 4.8.7.
+* `ALIGN'                                  (2): Section 6.1.2.
+* `ALIGN'                                  (3): Section 6.2.1.
+* `ALIGNB'                                 (1): Section 4.8.7.
+* alignment, in `bin' sections             (1): Section 6.1.2.
+* alignment, in `elf' sections             (1): Section 6.5.1.
+* alignment, in `obj' sections             (1): Section 6.2.1.
+* alignment, in `win32' sections           (1): Section 6.3.1.
+* alignment, of `elf' common variables     (1): Section 6.5.4.
+* `ALINK'                                  (1): Section 7.1.1.
+* `alink.sourceforge.net'                  (1): Section 7.1.1.
+* `alloc'                                  (1): Section 6.5.1.
+* `alt.lang.asm'                           (1): Section 1.1.1.
+* `alt.lang.asm'                           (2): Section 1.2.
+* ambiguity                                (1): Section 2.2.3.
+* `AND'                                    (1): Section B.4.8.
+* `ANDNPD'                                 (1): Section B.4.9.
+* `ANDNPS'                                 (1): Section B.4.10.
+* `ANDPD'                                  (1): Section B.4.11.
+* `ANDPS'                                  (1): Section B.4.12.
+* `a.out', BSD version                     (1): Section 6.7.
+* `a.out', Linux version                   (1): Section 6.6.
+* `aout'                                   (1): Section 2.1.1.
+* `aout'                                   (2): Section 6.6.
+* `aoutb'                                  (1): Section 6.7.
+* `aoutb'                                  (2): Section 8.2.
+* `%arg'                                   (1): Section 4.9.1.
+* `arg'                                    (1): Section 7.4.5.
+* `arg'                                    (2): Section 8.1.4.
+* `ARPL'                                   (1): Section B.4.13.
+* `as86'                                   (1): Section 1.1.1.
+* `as86'                                   (2): Section 2.1.1.
+* `as86'                                   (3): Section 6.8.
+* assembler directives                     (1): Chapter 5.
+* assembly passes                          (1): Section 3.8.
+* assembly-time options                    (1): Section 2.1.12.
+* `%assign'                                (1): Section 4.1.5.
+* `ASSUME'                                 (1): Section 2.2.4.
+* `AT'                                     (1): Section 4.8.6.
+* Autoconf                                 (1): Section 1.3.2.
+* `autoexec.bat'                           (1): Section 1.3.1.
+* `auto-sync'                              (1): Section A.3.3.
+* `-b'                                     (1): Section A.3.
+* bin                                      (1): Section 2.1.1.
+* bin                                      (2): Section 2.1.2.
+* bin                                      (3): Section 6.1.
+* bin, multisection                        (1): Section 6.1.3.
+* binary                                   (1): Section 3.4.1.
+* binary files                             (1): Section 3.2.3.
+* 16-bit mode, versus 32-bit mode          (1): Section 5.1.
+* bit shift                                (1): Section 3.5.4.
+* `BITS'                                   (1): Section 5.1.
+* `BITS'                                   (2): Section 6.1.
+* bitwise AND                              (1): Section 3.5.3.
+* bitwise OR                               (1): Section 3.5.1.
+* bitwise XOR                              (1): Section 3.5.2.
+* block IFs                                (1): Section 4.7.5.
+* boot loader                              (1): Section 6.1.
+* boot sector                              (1): Section 10.1.3.
+* Borland, Pascal                          (1): Section 7.5.
+* Borland, Win32 compilers                 (1): Section 6.2.
+* `BOUND'                                  (1): Section B.4.14.
+* braces, after `%' sign                   (1): Section 4.3.7.
+* braces, around macro parameters          (1): Section 4.3.
+* BSD                                      (1): Section 8.2.
+* `BSF'                                    (1): Section B.4.15.
+* `BSR'                                    (1): Section B.4.15.
+* `.bss'                                   (1): Section 6.5.1.
+* `.bss'                                   (2): Section 6.6.
+* `.bss'                                   (3): Section 6.7.
+* `.bss'                                   (4): Section 6.8.
+* `.bss'                                   (5): Section 6.9.
+* `BSWAP'                                  (1): Section B.4.16.
+* `BT'                                     (1): Section B.4.17.
+* `BTC'                                    (1): Section B.4.17.
+* `BTR'                                    (1): Section B.4.17.
+* `BTS'                                    (1): Section B.4.17.
+* bugs                                     (1): Section 10.2.
+* `bugtracker'                             (1): Section 10.2.
+* `BYTE'                                   (1): Section 10.1.1.
+* C calling convention                     (1): Section 7.4.3.
+* C calling convention                     (2): Section 8.1.2.
+* C symbol names                           (1): Section 7.4.1.
+* `CALL'                                   (1): Section B.4.18.
+* `CALL FAR'                               (1): Section 3.6.
+* case sensitivity                         (1): Section 2.2.1.
+* case sensitivity                         (2): Section 4.1.1.
+* case sensitivity                         (3): Section 4.1.2.
+* case sensitivity                         (4): Section 4.1.5.
+* case sensitivity                         (5): Section 4.3.
+* case sensitivity                         (6): Section 4.4.5.
+* case sensitivity                         (7): Section 6.2.3.
+* `CBW'                                    (1): Section B.4.19.
+* `CDQ'                                    (1): Section B.4.19.
+* changing sections                        (1): Section 5.2.
+* character constant                       (1): Section 3.2.1.
+* character constant                       (2): Section 3.4.2.
+* circular references                      (1): Section 4.1.1.
+* `CLASS'                                  (1): Section 6.2.1.
+* `CLC'                                    (1): Section B.4.20.
+* `CLD'                                    (1): Section B.4.20.
+* `%clear'                                 (1): Section 4.8.
+* `CLFLUSH'                                (1): Section B.4.21.
+* `CLI'                                    (1): Section B.4.20.
+* `CLTS'                                   (1): Section B.4.20.
+* `c16.mac'                                (1): Section 7.4.5.
+* `c16.mac'                                (2): Section 7.5.3.
+* `c32.mac'                                (1): Section 8.1.4.
+* `CMC'                                    (1): Section B.4.22.
+* `CMOVcc'                                 (1): Section B.4.23.
+* `CMP'                                    (1): Section B.4.24.
+* `CMPccPD'                                (1): Section B.4.25.
+* `CMPccPS'                                (1): Section B.4.26.
+* `CMPccSD'                                (1): Section B.4.28.
+* `CMPccSS'                                (1): Section B.4.29.
+* `CMPEQPD'                                (1): Section B.4.25.
+* `CMPEQPS'                                (1): Section B.4.26.
+* `CMPEQSD'                                (1): Section B.4.28.
+* `CMPEQSS'                                (1): Section B.4.29.
+* `CMPLEPD'                                (1): Section B.4.25.
+* `CMPLEPS'                                (1): Section B.4.26.
+* `CMPLESD'                                (1): Section B.4.28.
+* `CMPLESS'                                (1): Section B.4.29.
+* `CMPLTPD'                                (1): Section B.4.25.
+* `CMPLTPS'                                (1): Section B.4.26.
+* `CMPLTSD'                                (1): Section B.4.28.
+* `CMPLTSS'                                (1): Section B.4.29.
+* `CMPNEQPD'                               (1): Section B.4.25.
+* `CMPNEQPS'                               (1): Section B.4.26.
+* `CMPNEQSD'                               (1): Section B.4.28.
+* `CMPNEQSS'                               (1): Section B.4.29.
+* `CMPNLEPD'                               (1): Section B.4.25.
+* `CMPNLEPS'                               (1): Section B.4.26.
+* `CMPNLESD'                               (1): Section B.4.28.
+* `CMPNLESS'                               (1): Section B.4.29.
+* `CMPNLTPD'                               (1): Section B.4.25.
+* `CMPNLTPS'                               (1): Section B.4.26.
+* `CMPNLTSD'                               (1): Section B.4.28.
+* `CMPNLTSS'                               (1): Section B.4.29.
+* `CMPORDPD'                               (1): Section B.4.25.
+* `CMPORDPS'                               (1): Section B.4.26.
+* `CMPORDSD'                               (1): Section B.4.28.
+* `CMPORDSS'                               (1): Section B.4.29.
+* `CMPSB'                                  (1): Section B.4.27.
+* `CMPSD'                                  (1): Section B.4.27.
+* `CMPSW'                                  (1): Section B.4.27.
+* `CMPUNORDPD'                             (1): Section B.4.25.
+* `CMPUNORDPS'                             (1): Section B.4.26.
+* `CMPUNORDSD'                             (1): Section B.4.28.
+* `CMPUNORDSS'                             (1): Section B.4.29.
+* `CMPXCHG'                                (1): Section B.4.30.
+* `CMPXCHG486'                             (1): Section B.4.30.
+* `CMPXCHG8B'                              (1): Section B.4.31.
+* `coff'                                   (1): Section 2.1.1.
+* `coff'                                   (2): Section 6.4.
+* colon                                    (1): Section 3.1.
+* `.COM'                                   (1): Section 6.1.
+* `.COM'                                   (2): Section 7.2.
+* `COMISD'                                 (1): Section B.4.32.
+* `COMISS'                                 (1): Section B.4.33.
+* command-line                             (1): Section 2.1.
+* command-line                             (2): Chapter 6.
+* commas in macro parameters               (1): Section 4.3.3.
+* `COMMON'                                 (1): Section 5.6.
+* `COMMON'                                 (2): Section 6.2.1.
+* `COMMON', `elf' extensions to            (1): Section 6.5.4.
+* `COMMON', `obj' extensions to            (1): Section 6.2.8.
+* Common Object File Format                (1): Section 6.4.
+* common variables                         (1): Section 5.6.
+* common variables, alignment in `elf'     (1): Section 6.5.4.
+* common variables, element size           (1): Section 6.2.8.
+* `comp.lang.asm.x86'                      (1): Section 1.1.1.
+* `comp.lang.asm.x86'                      (2): Section 1.2.
+* `comp.os.linux.announce'                 (1): Section 1.2.
+* `comp.os.msdos.programmer'               (1): Section 7.3.
+* concatenating macro parameters           (1): Section 4.3.7.
+* condition codes                          (1): Section B.2.2.
+* condition codes as macro parameters      (1): Section 4.3.8.
+* condition predicates                     (1): Section B.4.25.
+* condition predicates                     (2): Section B.4.26.
+* condition predicates                     (3): Section B.4.28.
+* condition predicates                     (4): Section B.4.29.
+* conditional assembly                     (1): Section 4.4.
+* conditional jump                         (1): Section B.4.128.
+* conditional jumps                        (1): Section 10.1.2.
+* conditional-return macro                 (1): Section 4.3.8.
+* `configure'                              (1): Section 1.3.2.
+* constants                                (1): Section 3.4.
+* context stack                            (1): Section 4.7.
+* context stack                            (2): Section 4.7.5.
+* context-local labels                     (1): Section 4.7.2.
+* context-local single-line macros         (1): Section 4.7.3.
+* control registers                        (1): Section B.2.1.
+* counting macro parameters                (1): Section 4.3.5.
+* `CPU'                                    (1): Section 5.7.
+* `CPUID'                                  (1): Section 3.4.2.
+* `CPUID'                                  (2): Section B.4.34.
+* creating contexts                        (1): Section 4.7.1.
+* critical expression                      (1): Section 3.2.2.
+* critical expression                      (2): Section 3.2.4.
+* critical expression                      (3): Section 3.8.
+* critical expression                      (4): Section 4.1.5.
+* critical expression                      (5): Section 5.3.
+* `CVTDQ2PD'                               (1): Section B.4.35.
+* `CVTDQ2PS'                               (1): Section B.4.36.
+* `CVTPD2DQ'                               (1): Section B.4.37.
+* `CVTPD2PI'                               (1): Section B.4.38.
+* `CVTPD2PS'                               (1): Section B.4.39.
+* `CVTPI2PD'                               (1): Section B.4.40.
+* `CVTPI2PS'                               (1): Section B.4.41.
+* `CVTPS2DQ'                               (1): Section B.4.42.
+* `CVTPS2PD'                               (1): Section B.4.43.
+* `CVTPS2PI'                               (1): Section B.4.44.
+* `CVTSD2SI'                               (1): Section B.4.45.
+* `CVTSD2SS'                               (1): Section B.4.46.
+* `CVTSI2SD'                               (1): Section B.4.47.
+* `CVTSI2SS'                               (1): Section B.4.48.
+* `CVTSS2SD'                               (1): Section B.4.49.
+* `CVTSS2SI'                               (1): Section B.4.50.
+* `CVTTPD2DQ'                              (1): Section B.4.51.
+* `CVTTPD2PI'                              (1): Section B.4.52.
+* `CVTTPS2DQ'                              (1): Section B.4.53.
+* `CVTTPS2PI'                              (1): Section B.4.54.
+* `CVTTSD2SI'                              (1): Section B.4.55.
+* `CVTTSS2SI'                              (1): Section B.4.56.
+* `CWD'                                    (1): Section B.4.19.
+* `CWDE'                                   (1): Section B.4.19.
+* `-D' option                              (1): Section 2.1.12.
+* `-d' option                              (1): Section 2.1.12.
+* `DAA'                                    (1): Section B.4.57.
+* `DAS'                                    (1): Section B.4.57.
+* `.data'                                  (1): Section 6.5.1.
+* `.data'                                  (2): Section 6.6.
+* `.data'                                  (3): Section 6.7.
+* `.data'                                  (4): Section 6.8.
+* `.data'                                  (5): Section 6.9.
+* `_DATA'                                  (1): Section 7.4.2.
+* `data'                                   (1): Section 6.5.3.
+* `data'                                   (2): Section 6.9.3.
+* data structure                           (1): Section 7.4.4.
+* data structure                           (2): Section 8.1.3.
+* `DB'                                     (1): Section 3.2.
+* `DB'                                     (2): Section 3.2.1.
+* `DB'                                     (3): Section 3.4.3.
+* `dbg'                                    (1): Section 6.10.
+* `DD'                                     (1): Section 3.2.
+* `DD'                                     (2): Section 3.2.1.
+* `DD'                                     (3): Section 3.4.3.
+* `DD'                                     (4): Section 3.4.4.
+* debug information                        (1): Section 2.1.6.
+* debug information format                 (1): Section 2.1.5.
+* debug registers                          (1): Section B.2.1.
+* `DEC'                                    (1): Section B.4.58.
+* declaring structures                     (1): Section 4.8.5.
+* default macro parameters                 (1): Section 4.3.4.
+* default name                             (1): Chapter 6.
+* default-`WRT' mechanism                  (1): Section 6.2.7.
+* `%define'                                (1): Section 2.1.12.
+* `%define'                                (2): Section 4.1.1.
+* defining sections                        (1): Section 5.2.
+* design goals                             (1): Section 2.2.2.
+* DevPac                                   (1): Section 3.2.3.
+* DevPac                                   (2): Section 3.9.
+* disabling listing expansion              (1): Section 4.3.9.
+* `DIV'                                    (1): Section B.4.59.
+* division                                 (1): Section 3.5.6.
+* `DIVPD'                                  (1): Section B.4.60.
+* `DIVPS'                                  (1): Section B.4.61.
+* `DIVSD'                                  (1): Section B.4.62.
+* `DIVSS'                                  (1): Section B.4.63.
+* DJGPP                                    (1): Section 6.4.
+* DJGPP                                    (2): Chapter 8.
+* `djlink'                                 (1): Section 7.1.1.
+* DLL symbols, exporting                   (1): Section 6.2.5.
+* DLL symbols, importing                   (1): Section 6.2.4.
+* DOS                                      (1): Section 1.3.1.
+* DOS                                      (2): Section 2.1.8.
+* DOS                                      (3): Section 2.1.9.
+* DOS archive                              (1): Section 1.3.1.
+* DOS source archive                       (1): Section 1.3.1.
+* `DQ'                                     (1): Section 3.2.
+* `DQ'                                     (2): Section 3.2.1.
+* `DQ'                                     (3): Section 3.4.3.
+* `DQ'                                     (4): Section 3.4.4.
+* `.drectve'                               (1): Section 6.3.1.
+* `DT'                                     (1): Section 3.2.
+* `DT'                                     (2): Section 3.2.1.
+* `DT'                                     (3): Section 3.4.3.
+* `DT'                                     (4): Section 3.4.4.
+* `DUP'                                    (1): Section 2.2.7.
+* `DUP'                                    (2): Section 3.2.5.
+* `DW'                                     (1): Section 3.2.
+* `DW'                                     (2): Section 3.2.1.
+* `DW'                                     (3): Section 3.4.3.
+* `DWORD'                                  (1): Section 3.1.
+* `-E' option                              (1): Section 2.1.8.
+* `-e' option                              (1): Section 2.1.14.
+* `-e' option                              (2): Section A.3.4.
+* effective addresses                      (1): Section 3.1.
+* effective addresses                      (2): Section 3.3.
+* effective addresses                      (3): Section 3.8.
+* effective addresses                      (4): Section B.2.5.
+* element size, in common variables        (1): Section 6.2.8.
+* ELF                                      (1): Section 2.1.1.
+* ELF                                      (2): Section 6.5.
+* ELF, shared libraries                    (1): Section 6.5.2.
+* ELF, 16-bit code and                     (1): Section 6.5.5.
+* `%elif'                                  (1): Section 4.4.
+* `%elif'                                  (2): Section 4.4.4.
+* `%elifctx'                               (1): Section 4.4.3.
+* `%elifdef'                               (1): Section 4.4.1.
+* `%elifid'                                (1): Section 4.4.6.
+* `%elifidn'                               (1): Section 4.4.5.
+* `%elifidni'                              (1): Section 4.4.5.
+* `%elifmacro'                             (1): Section 4.4.2.
+* `%elifnctx'                              (1): Section 4.4.3.
+* `%elifndef'                              (1): Section 4.4.1.
+* `%elifnid'                               (1): Section 4.4.6.
+* `%elifnidn'                              (1): Section 4.4.5.
+* `%elifnidni'                             (1): Section 4.4.5.
+* `%elifnmacro'                            (1): Section 4.4.2.
+* `%elifnnum'                              (1): Section 4.4.6.
+* `%elifnstr'                              (1): Section 4.4.6.
+* `%elifnum'                               (1): Section 4.4.6.
+* `%elifstr'                               (1): Section 4.4.6.
+* `%else'                                  (1): Section 4.4.
+* e-mail                                   (1): Section 1.2.
+* `EMMS'                                   (1): Section B.4.64.
+* `endproc'                                (1): Section 7.4.5.
+* `endproc'                                (2): Section 8.1.4.
+* `%endrep'                                (1): Section 4.5.
+* `ENDSTRUC'                               (1): Section 4.8.5.
+* `ENDSTRUC'                               (2): Section 5.3.
+* `ENTER'                                  (1): Section B.4.65.
+* environment                              (1): Section 2.1.22.
+* `EQU'                                    (1): Section 3.2.
+* `EQU'                                    (2): Section 3.2.4.
+* `EQU'                                    (3): Section 3.8.
+* `%error'                                 (1): Section 4.4.7.
+* error messages                           (1): Section 2.1.8.
+* error messages                           (2): Section 2.1.9.
+* error reporting format                   (1): Section 2.1.7.
+* `EVEN'                                   (1): Section 4.8.7.
+* `.EXE'                                   (1): Section 6.2.
+* `.EXE'                                   (2): Section 7.1.
+* `EXE_begin'                              (1): Section 7.1.2.
+* `EXE2BIN'                                (1): Section 7.2.2.
+* `exebin.mac'                             (1): Section 7.1.2.
+* `exec'                                   (1): Section 6.5.1.
+* Executable and Linkable Format           (1): Section 6.5.
+* `EXE_end'                                (1): Section 7.1.2.
+* `EXE_stack'                              (1): Section 7.1.2.
+* `%exitrep'                               (1): Section 4.5.
+* `EXPORT'                                 (1): Section 6.2.5.
+* `export'                                 (1): Section 6.9.3.
+* exporting symbols                        (1): Section 5.5.
+* expressions                              (1): Section 2.1.14.
+* expressions                              (2): Section 3.5.
+* extension                                (1): Section 2.1.1.
+* extension                                (2): Chapter 6.
+* `EXTERN'                                 (1): Section 5.4.
+* `EXTERN', `obj' extensions to            (1): Section 6.2.7.
+* `EXTERN', `rdf' extensions to            (1): Section 6.9.4.
+* `-F' option                              (1): Section 2.1.5.
+* `-f' option                              (1): Section 2.1.2.
+* `-f' option                              (2): Chapter 6.
+* `FABS'                                   (1): Section B.4.67.
+* `FADD'                                   (1): Section B.4.68.
+* `FADDP'                                  (1): Section B.4.68.
+* far call                                 (1): Section 2.2.5.
+* far call                                 (2): Section B.4.18.
+* far common variables                     (1): Section 6.2.8.
+* far jump                                 (1): Section B.4.130.
+* far pointer                              (1): Section 3.6.
+* `FARCODE'                                (1): Section 7.4.5.
+* `FARCODE'                                (2): Section 7.5.3.
+* `FBLD'                                   (1): Section B.4.69.
+* `FBSTP'                                  (1): Section B.4.69.
+* `FCHS'                                   (1): Section B.4.70.
+* `FCLEX'                                  (1): Section B.4.71.
+* `FCMOVcc'                                (1): Section B.4.72.
+* `FCOM'                                   (1): Section B.4.73.
+* `FCOMI'                                  (1): Section B.4.73.
+* `FCOMIP'                                 (1): Section B.4.73.
+* `FCOMP'                                  (1): Section B.4.73.
+* `FCOMPP'                                 (1): Section B.4.73.
+* `FCOS'                                   (1): Section B.4.74.
+* `FDECSTP'                                (1): Section B.4.75.
+* `FDIV'                                   (1): Section B.4.77.
+* `FDIVP'                                  (1): Section B.4.77.
+* `FDIVR'                                  (1): Section B.4.77.
+* `FDIVRP'                                 (1): Section B.4.77.
+* `FEMMS'                                  (1): Section B.4.78.
+* `FFREE'                                  (1): Section B.4.79.
+* `FIADD'                                  (1): Section B.4.80.
+* `FICOM'                                  (1): Section B.4.81.
+* `FICOMP'                                 (1): Section B.4.81.
+* `FIDIV'                                  (1): Section B.4.82.
+* `FIDIVR'                                 (1): Section B.4.82.
+* `FILD'                                   (1): Section B.4.83.
+* `__FILE__'                               (1): Section 4.8.4.
+* `FIMUL'                                  (1): Section B.4.84.
+* `FINCSTP'                                (1): Section B.4.85.
+* `FINIT'                                  (1): Section B.4.86.
+* `FIST'                                   (1): Section B.4.83.
+* `FISTP'                                  (1): Section B.4.83.
+* `FISUB'                                  (1): Section B.4.87.
+* `FLAT'                                   (1): Section 6.2.1.
+* flat memory model                        (1): Chapter 8.
+* flat-form binary                         (1): Section 6.1.
+* `FLD'                                    (1): Section B.4.88.
+* `FLDCW'                                  (1): Section B.4.90.
+* `FLDENV'                                 (1): Section B.4.91.
+* `FLDxx'                                  (1): Section B.4.89.
+* floating-point                           (1): Section 2.2.6.
+* floating-point                           (2): Section 3.1.
+* floating-point                           (3): Section 3.2.1.
+* floating-point                           (4): Section 3.4.4.
+* floating-point, constants                (1): Section 3.4.4.
+* floating-point, registers                (1): Section B.2.1.
+* `FMUL'                                   (1): Section B.4.92.
+* `FMULP'                                  (1): Section B.4.92.
+* `FNINIT'                                 (1): Section B.4.86.
+* `FNOP'                                   (1): Section B.4.93.
+* `follows='                               (1): Section 6.1.3.
+* format-specific directives               (1): Chapter 5.
+* forward references                       (1): Section 3.8.
+* `FPATAN'                                 (1): Section B.4.94.
+* `FPREM'                                  (1): Section B.4.95.
+* `FPREM1'                                 (1): Section B.4.95.
+* `FPTAN'                                  (1): Section B.4.94.
+* frame pointer                            (1): Section 7.4.3.
+* frame pointer                            (2): Section 7.5.1.
+* frame pointer                            (3): Section 8.1.2.
+* FreeBSD                                  (1): Section 6.7.
+* FreeBSD                                  (2): Section 8.2.
+* FreeLink                                 (1): Section 7.1.1.
+* `FRNDINT'                                (1): Section B.4.96.
+* `FRSTOR'                                 (1): Section B.4.97.
+* `FSAVE'                                  (1): Section B.4.97.
+* `FSCALE'                                 (1): Section B.4.98.
+* `FSETPM'                                 (1): Section B.4.99.
+* `FSIN'                                   (1): Section B.4.100.
+* `FSINCOS'                                (1): Section B.4.100.
+* `FSQRT'                                  (1): Section B.4.101.
+* `FST'                                    (1): Section B.4.102.
+* `FSTCW'                                  (1): Section B.4.103.
+* `FSTENV'                                 (1): Section B.4.104.
+* `FSTP'                                   (1): Section B.4.102.
+* `FSTSW'                                  (1): Section B.4.105.
+* `FSUB'                                   (1): Section B.4.106.
+* `FSUBP'                                  (1): Section B.4.106.
+* `FSUBR'                                  (1): Section B.4.106.
+* `FSUBRP'                                 (1): Section B.4.106.
+* `ftp.kernel.org'                         (1): Section 1.2.
+* `ftp.simtel.net'                         (1): Section 7.1.1.
+* `FTST'                                   (1): Section B.4.107.
+* `FUCOMxx'                                (1): Section B.4.108.
+* `function'                               (1): Section 6.5.3.
+* `function'                               (2): Section 6.9.3.
+* functions, C calling convention          (1): Section 7.4.3.
+* functions, C calling convention          (2): Section 8.1.2.
+* functions, Pascal calling convention     (1): Section 7.5.1.
+* `FXAM'                                   (1): Section B.4.109.
+* `FXCH'                                   (1): Section B.4.110.
+* `FxDISI'                                 (1): Section B.4.76.
+* `FxENI'                                  (1): Section B.4.76.
+* `F2XM1'                                  (1): Section B.4.66.
+* `FXRSTOR'                                (1): Section B.4.111.
+* `FXSAVE'                                 (1): Section B.4.112.
+* `FXTRACT'                                (1): Section B.4.113.
+* `FYL2X'                                  (1): Section B.4.114.
+* `FYL2XP1'                                (1): Section B.4.114.
+* `-g' option                              (1): Section 2.1.6.
+* `gas'                                    (1): Section 1.1.1.
+* `gcc'                                    (1): Section 1.1.1.
+* general purpose register                 (1): Section B.1.
+* `GLOBAL'                                 (1): Section 5.5.
+* `GLOBAL', `aoutb' extensions to          (1): Section 6.5.3.
+* `GLOBAL', `elf' extensions to            (1): Section 6.5.3.
+* `GLOBAL', `rdf' extensions to            (1): Section 6.9.3.
+* global offset table                      (1): Section 8.2.
+* `_GLOBAL_OFFSET_TABLE_'                  (1): Section 6.5.2.
+* `gnu-elf-extensions'                     (1): Section 2.1.18.
+* `..got'                                  (1): Section 6.5.2.
+* `GOT' relocations                        (1): Section 8.2.3.
+* GOT                                      (1): Section 6.5.2.
+* GOT                                      (2): Section 8.2.
+* `..gotoff'                               (1): Section 6.5.2.
+* `GOTOFF' relocations                     (1): Section 8.2.2.
+* `..gotpc'                                (1): Section 6.5.2.
+* `GOTPC' relocations                      (1): Section 8.2.1.
+* graphics                                 (1): Section 3.2.3.
+* greedy macro parameters                  (1): Section 4.3.3.
+* `GROUP'                                  (1): Section 6.2.2.
+* groups                                   (1): Section 3.6.
+* `-h'                                     (1): Section A.3.
+* hex                                      (1): Section 3.4.1.
+* `HLT'                                    (1): Section B.4.115.
+* hybrid syntaxes                          (1): Section 2.2.2.
+* `-I' option                              (1): Section 2.1.10.
+* `-i' option                              (1): Section 2.1.10.
+* `-i' option                              (2): Section A.3.3.
+* `%iassign'                               (1): Section 4.1.5.
+* `ibiblio.org'                            (1): Section 1.2.
+* `IBTS'                                   (1): Section B.4.116.
+* `ICEBP'                                  (1): Section B.4.123.
+* `%idefine'                               (1): Section 4.1.1.
+* `IDIV'                                   (1): Section B.4.117.
+* `IEND'                                   (1): Section 4.8.6.
+* `%if'                                    (1): Section 4.4.
+* `%if'                                    (2): Section 4.4.4.
+* `%ifctx'                                 (1): Section 4.4.3.
+* `%ifctx'                                 (2): Section 4.7.5.
+* `%ifdef'                                 (1): Section 4.4.1.
+* `%ifid'                                  (1): Section 4.4.6.
+* `%ifidn'                                 (1): Section 4.4.5.
+* `%ifidni'                                (1): Section 4.4.5.
+* `ifmacro'                                (1): Section 4.4.2.
+* `%ifnctx'                                (1): Section 4.4.3.
+* `%ifndef'                                (1): Section 4.4.1.
+* `%ifnid'                                 (1): Section 4.4.6.
+* `%ifnidn'                                (1): Section 4.4.5.
+* `%ifnidni'                               (1): Section 4.4.5.
+* `%ifnmacro'                              (1): Section 4.4.2.
+* `%ifnnum'                                (1): Section 4.4.6.
+* `%ifnstr'                                (1): Section 4.4.6.
+* `%ifnum'                                 (1): Section 4.4.6.
+* `%ifstr'                                 (1): Section 4.4.6.
+* `%imacro'                                (1): Section 4.3.
+* immediate operand                        (1): Section B.1.
+* `IMPORT'                                 (1): Section 6.2.4.
+* import library                           (1): Section 6.2.4.
+* importing symbols                        (1): Section 5.4.
+* `IMUL'                                   (1): Section B.4.118.
+* `IN'                                     (1): Section B.4.119.
+* `INC'                                    (1): Section B.4.120.
+* `INCBIN'                                 (1): Section 3.2.
+* `INCBIN'                                 (2): Section 3.2.3.
+* `INCBIN'                                 (3): Section 3.4.3.
+* `incbin'                                 (1): Section 2.1.10.
+* `%include'                               (1): Section 2.1.10.
+* `%include'                               (2): Section 2.1.11.
+* `%include'                               (3): Section 4.6.
+* include search path                      (1): Section 2.1.10.
+* including other files                    (1): Section 4.6.
+* inefficient code                         (1): Section 10.1.1.
+* infinite loop                            (1): Section 3.5.
+* informational section                    (1): Section 6.3.1.
+* `INSB'                                   (1): Section B.4.121.
+* `INSD'                                   (1): Section B.4.121.
+* `INSTALL'                                (1): Section 1.3.2.
+* installing                               (1): Section 1.3.1.
+* instances of structures                  (1): Section 4.8.6.
+* `INSW'                                   (1): Section B.4.121.
+* `INT'                                    (1): Section B.4.122.
+* `INT01'                                  (1): Section B.4.123.
+* `INT1'                                   (1): Section B.4.123.
+* `INT3'                                   (1): Section B.4.123.
+* integer overflow                         (1): Section 3.5.
+* Intel number formats                     (1): Section 3.4.4.
+* `INTO'                                   (1): Section B.4.124.
+* `INVD'                                   (1): Section B.4.125.
+* `INVLPG'                                 (1): Section B.4.126.
+* `IRET'                                   (1): Section B.4.127.
+* `IRETD'                                  (1): Section B.4.127.
+* `IRETW'                                  (1): Section B.4.127.
+* `ISTRUC'                                 (1): Section 4.8.6.
+* iterating over macro parameters          (1): Section 4.3.6.
+* `Jcc'                                    (1): Section B.4.128.
+* `Jcc NEAR'                               (1): Section 10.1.2.
+* `JCXZ'                                   (1): Section B.4.129.
+* `JECXZ'                                  (1): Section B.4.129.
+* `JMP'                                    (1): Section B.4.130.
+* `JMP DWORD'                              (1): Section 9.1.
+* jumps, mixed-size                        (1): Section 9.1.
+* `-k'                                     (1): Section A.3.4.
+* `-l' option                              (1): Section 2.1.3.
+* label prefix                             (1): Section 3.9.
+* `LAHF'                                   (1): Section B.4.131.
+* `LAR'                                    (1): Section B.4.132.
+* `ld86'                                   (1): Section 6.8.
+* `LDMXCSR'                                (1): Section B.4.133.
+* `LDS'                                    (1): Section B.4.134.
+* `LEA'                                    (1): Section B.4.135.
+* `LEAVE'                                  (1): Section B.4.136.
+* `LES'                                    (1): Section B.4.134.
+* `LFENCE'                                 (1): Section B.4.137.
+* `LFS'                                    (1): Section B.4.134.
+* `LGDT'                                   (1): Section B.4.138.
+* `LGS'                                    (1): Section B.4.134.
+* `LIBRARY'                                (1): Section 6.9.1.
+* licence                                  (1): Section 1.1.2.
+* `LIDT'                                   (1): Section B.4.138.
+* `%line'                                  (1): Section 4.10.1.
+* `__LINE__'                               (1): Section 4.8.4.
+* linker, free                             (1): Section 7.1.1.
+* Linux, `a.out'                           (1): Section 6.6.
+* Linux, `as86'                            (1): Section 6.8.
+* Linux, ELF                               (1): Section 6.5.
+* listing file                             (1): Section 2.1.3.
+* little-endian                            (1): Section 3.4.2.
+* `LLDT'                                   (1): Section B.4.138.
+* `LMSW'                                   (1): Section B.4.139.
+* `LOADALL'                                (1): Section B.4.140.
+* `LOADALL286'                             (1): Section B.4.140.
+* `%local'                                 (1): Section 4.9.3.
+* local labels                             (1): Section 3.9.
+* `LODSB'                                  (1): Section B.4.141.
+* `LODSD'                                  (1): Section B.4.141.
+* `LODSW'                                  (1): Section B.4.141.
+* logical AND                              (1): Section 4.4.4.
+* logical OR                               (1): Section 4.4.4.
+* logical XOR                              (1): Section 4.4.4.
+* `LOOP'                                   (1): Section B.4.142.
+* `LOOPE'                                  (1): Section B.4.142.
+* `LOOPNE'                                 (1): Section B.4.142.
+* `LOOPNZ'                                 (1): Section B.4.142.
+* `LOOPZ'                                  (1): Section B.4.142.
+* `LSL'                                    (1): Section B.4.143.
+* `LSS'                                    (1): Section B.4.134.
+* `LTR'                                    (1): Section B.4.144.
+* `-M' option                              (1): Section 2.1.4.
+* `%macro'                                 (1): Section 4.3.
+* macro library                            (1): Section 2.1.10.
+* macro processor                          (1): Chapter 4.
+* macro-local labels                       (1): Section 4.3.2.
+* `macro-params'                           (1): Section 2.1.18.
+* macros                                   (1): Section 3.2.5.
+* `macro-selfref'                          (1): Section 2.1.18.
+* `make'                                   (1): Section 1.3.2.
+* makefile dependencies                    (1): Section 2.1.4.
+* makefiles                                (1): Section 1.3.1.
+* makefiles                                (2): Section 1.3.2.
+* `Makefile.unx'                           (1): Section 1.3.2.
+* man pages                                (1): Section 1.3.2.
+* map files                                (1): Section 6.1.4.
+* `MASKMOVDQU'                             (1): Section B.4.145.
+* `MASKMOVQ'                               (1): Section B.4.146.
+* `MASM'                                   (1): Section 1.1.1.
+* MASM                                     (1): Section 2.2.
+* MASM                                     (2): Section 3.2.5.
+* MASM                                     (3): Section 6.2.
+* `MAXPD'                                  (1): Section B.4.147.
+* `MAXPS'                                  (1): Section B.4.148.
+* `MAXSD'                                  (1): Section B.4.149.
+* `MAXSS'                                  (1): Section B.4.150.
+* memory models                            (1): Section 2.2.5.
+* memory models                            (2): Section 7.4.2.
+* memory operand                           (1): Section 3.1.
+* memory references                        (1): Section 2.2.2.
+* memory references                        (2): Section 3.3.
+* memory references                        (3): Section B.1.
+* `MFENCE'                                 (1): Section B.4.151.
+* Microsoft OMF                            (1): Section 6.2.
+* Minix                                    (1): Section 6.8.
+* `MINPD'                                  (1): Section B.4.152.
+* `MINPS'                                  (1): Section B.4.153.
+* `MINSD'                                  (1): Section B.4.154.
+* `MINSS'                                  (1): Section B.4.155.
+* `misc' subdirectory                      (1): Section 7.1.2.
+* `misc' subdirectory                      (2): Section 7.4.5.
+* `misc' subdirectory                      (3): Section 8.1.4.
+* mixed-language program                   (1): Section 7.4.
+* mixed-size addressing                    (1): Section 9.2.
+* mixed-size instruction                   (1): Section 9.1.
+* MMX registers                            (1): Section B.2.1.
+* ModR/M byte                              (1): Section B.2.
+* ModR/M byte                              (2): Section B.2.5.
+* `MODULE'                                 (1): Section 6.9.2.
+* modulo operators                         (1): Section 3.5.6.
+* `MOV'                                    (1): Section B.4.156.
+* `MOVAPD'                                 (1): Section B.4.157.
+* `MOVAPS'                                 (1): Section B.4.158.
+* `MOVD'                                   (1): Section B.4.159.
+* `MOVDQA'                                 (1): Section B.4.161.
+* `MOVDQ2Q'                                (1): Section B.4.160.
+* `MOVDQU'                                 (1): Section B.4.162.
+* `MOVHLPS'                                (1): Section B.4.163.
+* `MOVHPD'                                 (1): Section B.4.164.
+* `MOVHPS'                                 (1): Section B.4.165.
+* `MOVLHPS'                                (1): Section B.4.166.
+* `MOVLPD'                                 (1): Section B.4.167.
+* `MOVLPS'                                 (1): Section B.4.168.
+* `MOVMSKPD'                               (1): Section B.4.169.
+* `MOVMSKPS'                               (1): Section B.4.170.
+* `MOVNTDQ'                                (1): Section B.4.171.
+* `MOVNTI'                                 (1): Section B.4.172.
+* `MOVNTPD'                                (1): Section B.4.173.
+* `MOVNTPS'                                (1): Section B.4.174.
+* `MOVNTQ'                                 (1): Section B.4.175.
+* `MOVQ'                                   (1): Section B.4.176.
+* `MOVQ2DQ'                                (1): Section B.4.177.
+* `MOVSB'                                  (1): Section B.4.178.
+* `MOVSD'                                  (1): Section B.4.178.
+* `MOVSD'                                  (2): Section B.4.179.
+* `MOVSS'                                  (1): Section B.4.180.
+* `MOVSW'                                  (1): Section B.4.178.
+* `MOVSX'                                  (1): Section B.4.181.
+* `MOVUPD'                                 (1): Section B.4.182.
+* `MOVUPS'                                 (1): Section B.4.183.
+* `MOVZX'                                  (1): Section B.4.181.
+* MS-DOS                                   (1): Section 6.1.
+* MS-DOS device drivers                    (1): Section 7.3.
+* `MUL'                                    (1): Section B.4.184.
+* `MULPD'                                  (1): Section B.4.185.
+* `MULPS'                                  (1): Section B.4.186.
+* `MULSD'                                  (1): Section B.4.187.
+* `MULSS'                                  (1): Section B.4.188.
+* multi-line macros                        (1): Section 2.1.18.
+* multi-line macros                        (2): Section 4.3.
+* multipass optimization                   (1): Section 2.1.16.
+* multiple section names                   (1): Section 6.1.
+* multiplication                           (1): Section 3.5.6.
+* `multipush' macro                        (1): Section 4.3.6.
+* `Multisection'                           (1): Section 6.1.3.
+* `nasm.1'                                 (1): Section 1.3.2.
+* NASM version                             (1): Section 4.8.1.
+* nasm version id                          (1): Section 4.8.2.
+* nasm version string                      (1): Section 4.8.3.
+* `__NASMDEFSEG'                           (1): Section 6.2.
+* `nasm-devel'                             (1): Section 1.2.
+* `nasm.exe'                               (1): Section 1.3.1.
+* `nasm -f <format> -y'                    (1): Section 2.1.5.
+* `nasm -hf'                               (1): Section 2.1.2.
+* `__NASM_MAJOR__'                         (1): Section 4.8.1.
+* `__NASM_MINOR__'                         (1): Section 4.8.1.
+* `nasm.out'                               (1): Section 2.1.1.
+* `___NASM_PATCHLEVEL__'                   (1): Section 4.8.1.
+* `__NASM_SUBMINOR__'                      (1): Section 4.8.1.
+* `__NASM_VER__'                           (1): Section 4.8.3.
+* `__NASM_VERSION_ID__'                    (1): Section 4.8.2.
+* `nasmw.exe'                              (1): Section 1.3.1.
+* `nasmXXXs.zip'                           (1): Section 1.3.1.
+* `nasm-X.XX.tar.gz'                       (1): Section 1.3.2.
+* `nasmXXX.zip'                            (1): Section 1.3.1.
+* `ndisasm.1'                              (1): Section 1.3.2.
+* ndisasm                                  (1): Appendix A.
+* `ndisasm.exe'                            (1): Section 1.3.1.
+* `ndisasmw.exe'                           (1): Section 1.3.1.
+* near call                                (1): Section 2.2.5.
+* near call                                (2): Section B.4.18.
+* near common variables                    (1): Section 6.2.8.
+* near jump                                (1): Section B.4.130.
+* `NEG'                                    (1): Section B.4.189.
+* NetBSD                                   (1): Section 6.7.
+* NetBSD                                   (2): Section 8.2.
+* new releases                             (1): Section 1.2.
+* `noalloc'                                (1): Section 6.5.1.
+* `nobits'                                 (1): Section 6.1.3.
+* `nobits'                                 (2): Section 6.5.1.
+* `noexec'                                 (1): Section 6.5.1.
+* `.nolist'                                (1): Section 4.3.9.
+* `NOP'                                    (1): Section B.4.190.
+* `NOT'                                    (1): Section B.4.189.
+* `nowait'                                 (1): Section 2.2.6.
+* `nowrite'                                (1): Section 6.5.1.
+* `number-overflow'                        (1): Section 2.1.18.
+* numeric constants                        (1): Section 3.2.1.
+* numeric constants                        (2): Section 3.4.1.
+* `-o' option                              (1): Section 2.1.1.
+* `-o' option                              (2): Section A.3.1.
+* `o16'                                    (1): Section 9.3.
+* `o16'                                    (2): Section B.4.244.
+* `o16'                                    (3): Section B.4.263.
+* `o32'                                    (1): Section 9.3.
+* `o32'                                    (2): Section B.4.244.
+* `o32'                                    (3): Section B.4.263.
+* `.OBJ'                                   (1): Section 7.1.
+* `obj'                                    (1): Section 2.1.1.
+* `obj'                                    (2): Section 6.2.
+* `object'                                 (1): Section 6.5.3.
+* `object'                                 (2): Section 6.9.3.
+* octal                                    (1): Section 3.4.1.
+* `OF_DBG'                                 (1): Section 6.10.
+* `OF_DEFAULT'                             (1): Section 2.1.2.
+* `OFFSET'                                 (1): Section 2.2.2.
+* OMF                                      (1): Section 6.2.
+* omitted parameters                       (1): Section 4.3.4.
+* `-On' option                             (1): Section 2.1.16.
+* one's complement                         (1): Section 3.5.7.
+* OpenBSD                                  (1): Section 6.7.
+* OpenBSD                                  (2): Section 8.2.
+* operands                                 (1): Section 3.1.
+* operand-size prefixes                    (1): Section 3.1.
+* operating system                         (1): Section 6.1.
+* operating system, writing                (1): Section 9.1.
+* operators                                (1): Section 3.5.
+* `OR'                                     (1): Section B.4.191.
+* `ORG'                                    (1): Section 6.1.1.
+* `ORG'                                    (2): Section 7.2.1.
+* `ORG'                                    (3): Section 7.2.2.
+* `ORG'                                    (4): Section 10.1.3.
+* `ORPD'                                   (1): Section B.4.192.
+* `orphan-labels'                          (1): Section 2.1.18.
+* `orphan-labels'                          (2): Section 3.1.
+* `ORPS'                                   (1): Section B.4.193.
+* OS/2                                     (1): Section 6.2.
+* OS/2                                     (2): Section 6.2.1.
+* other preprocessor directives            (1): Section 4.10.
+* `OUT'                                    (1): Section B.4.194.
+* out of range, jumps                      (1): Section 10.1.2.
+* output file format                       (1): Section 2.1.2.
+* output formats                           (1): Chapter 6.
+* `OUTSB'                                  (1): Section B.4.195.
+* `OUTSD'                                  (1): Section B.4.195.
+* `OUTSW'                                  (1): Section B.4.195.
+* overlapping segments                     (1): Section 3.6.
+* `OVERLAY'                                (1): Section 6.2.1.
+* overloading, multi-line macros           (1): Section 4.3.1.
+* overloading, single-line macros          (1): Section 4.1.1.
+* `-P' option                              (1): Section 2.1.11.
+* `-p' option                              (1): Section 2.1.11.
+* `-p' option                              (2): Section 4.6.
+* `PACKSSDW'                               (1): Section B.4.196.
+* `PACKSSWB'                               (1): Section B.4.196.
+* `PACKUSWB'                               (1): Section B.4.196.
+* `PADDB'                                  (1): Section B.4.197.
+* `PADDD'                                  (1): Section B.4.197.
+* `PADDQ'                                  (1): Section B.4.198.
+* `PADDSB'                                 (1): Section B.4.199.
+* `PADDSIW'                                (1): Section B.4.200.
+* `PADDSW'                                 (1): Section B.4.199.
+* `PADDUSB'                                (1): Section B.4.201.
+* `PADDUSW'                                (1): Section B.4.201.
+* `PADDW'                                  (1): Section B.4.197.
+* `PAND'                                   (1): Section B.4.202.
+* `PANDN'                                  (1): Section B.4.202.
+* paradox                                  (1): Section 3.8.
+* `PASCAL'                                 (1): Section 7.5.3.
+* Pascal calling convention                (1): Section 7.5.1.
+* passes, assembly                         (1): Section 3.8.
+* `PATH'                                   (1): Section 1.3.1.
+* `PAUSE'                                  (1): Section B.4.203.
+* `PAVEB'                                  (1): Section B.4.204.
+* `PAVGB'                                  (1): Section B.4.205.
+* `PAVGUSB'                                (1): Section B.4.206.
+* `PAVGW'                                  (1): Section B.4.205.
+* `PCMPxx'                                 (1): Section B.4.207.
+* `PDISTIB'                                (1): Section B.4.208.
+* period                                   (1): Section 3.9.
+* Perl                                     (1): Section 1.3.1.
+* perverse                                 (1): Section 2.1.10.
+* `PEXTRW'                                 (1): Section B.4.209.
+* `PFACC'                                  (1): Section B.4.212.
+* `PFADD'                                  (1): Section B.4.213.
+* `PFCMPEQ'                                (1): Section B.4.214.
+* `PFCMPGE'                                (1): Section B.4.214.
+* `PFCMPGT'                                (1): Section B.4.214.
+* `PFCMPxx'                                (1): Section B.4.214.
+* `PF2ID'                                  (1): Section B.4.210.
+* `PF2IW'                                  (1): Section B.4.211.
+* `PF2IW'                                  (2): Section B.4.228.
+* `PFMAX'                                  (1): Section B.4.215.
+* `PFMIN'                                  (1): Section B.4.216.
+* `PFMUL'                                  (1): Section B.4.217.
+* `PFNACC'                                 (1): Section B.4.218.
+* `PFPNACC'                                (1): Section B.4.219.
+* `PFRCP'                                  (1): Section B.4.220.
+* `PFRCPIT1'                               (1): Section B.4.221.
+* `PFRCPIT2'                               (1): Section B.4.222.
+* `PFRSQIT1'                               (1): Section B.4.223.
+* `PFRSQRT'                                (1): Section B.4.224.
+* `PFSUB'                                  (1): Section B.4.225.
+* `PFSUBR'                                 (1): Section B.4.226.
+* PharLap                                  (1): Section 6.2.1.
+* PIC                                      (1): Section 6.5.2.
+* PIC                                      (2): Section 6.7.
+* PIC                                      (3): Section 8.2.
+* `PI2FD'                                  (1): Section B.4.227.
+* `PINSRW'                                 (1): Section B.4.229.
+* `..plt'                                  (1): Section 6.5.2.
+* `PLT' relocations                        (1): Section 6.5.2.
+* `PLT' relocations                        (2): Section 8.2.4.
+* `PLT' relocations                        (3): Section 8.2.5.
+* plt relocations                          (1): Section 8.2.5.
+* `PMACHRIW'                               (1): Section B.4.230.
+* `PMADDWD'                                (1): Section B.4.231.
+* `PMAGW'                                  (1): Section B.4.232.
+* `PMAXSW'                                 (1): Section B.4.233.
+* `PMAXUB'                                 (1): Section B.4.234.
+* `PMINSW'                                 (1): Section B.4.235.
+* `PMINUB'                                 (1): Section B.4.236.
+* `PMOVMSKB'                               (1): Section B.4.237.
+* `PMULHRIW'                               (1): Section B.4.238.
+* `PMULHRWA'                               (1): Section B.4.239.
+* `PMULHRWC'                               (1): Section B.4.238.
+* `PMULHUW'                                (1): Section B.4.240.
+* `PMULHW'                                 (1): Section B.4.241.
+* `PMULLW'                                 (1): Section B.4.241.
+* `PMULUDQ'                                (1): Section B.4.242.
+* `PMVccZB'                                (1): Section B.4.243.
+* `%pop'                                   (1): Section 4.7.
+* `%pop'                                   (2): Section 4.7.1.
+* `POP'                                    (1): Section B.4.244.
+* `POPAx'                                  (1): Section B.4.245.
+* `POPFx'                                  (1): Section B.4.246.
+* `POR'                                    (1): Section B.4.247.
+* position-independent code                (1): Section 6.5.2.
+* position-independent code                (2): Section 6.7.
+* position-independent code                (3): Section 8.2.
+* `--postfix'                              (1): Section 2.1.21.
+* precedence                               (1): Section 3.5.
+* pre-defining macros                      (1): Section 2.1.12.
+* pre-defining macros                      (2): Section 4.1.1.
+* preferred                                (1): Section 3.6.
+* `PREFETCH'                               (1): Section B.4.248.
+* `PREFETCHh'                              (1): Section B.4.249.
+* `PREFETCHNTA'                            (1): Section B.4.249.
+* `PREFETCHT0'                             (1): Section B.4.249.
+* `PREFETCHT1'                             (1): Section B.4.249.
+* `PREFETCHT2'                             (1): Section B.4.249.
+* `--prefix'                               (1): Section 2.1.21.
+* pre-including files                      (1): Section 2.1.11.
+* preprocess-only mode                     (1): Section 2.1.14.
+* preprocessor                             (1): Section 2.1.14.
+* preprocessor                             (2): Section 2.1.15.
+* preprocessor                             (3): Section 3.2.4.
+* preprocessor                             (4): Section 3.5.6.
+* preprocessor                             (5): Chapter 4.
+* preprocessor expressions                 (1): Section 2.1.14.
+* preprocessor loops                       (1): Section 4.5.
+* preprocessor variables                   (1): Section 4.1.5.
+* primitive directives                     (1): Chapter 5.
+* `PRIVATE'                                (1): Section 6.2.1.
+* `proc'                                   (1): Section 6.9.3.
+* `proc'                                   (2): Section 7.4.5.
+* `proc'                                   (3): Section 8.1.4.
+* procedure linkage table                  (1): Section 6.5.2.
+* procedure linkage table                  (2): Section 8.2.4.
+* procedure linkage table                  (3): Section 8.2.5.
+* processor mode                           (1): Section 5.1.
+* `progbits'                               (1): Section 6.1.3.
+* `progbits'                               (2): Section 6.5.1.
+* program entry point                      (1): Section 6.2.6.
+* program entry point                      (2): Section 7.1.1.
+* program origin                           (1): Section 6.1.1.
+* `PSADBW'                                 (1): Section B.4.250.
+* pseudo-instructions                      (1): Section 3.2.
+* `PSHUFD'                                 (1): Section B.4.251.
+* `PSHUFHW'                                (1): Section B.4.252.
+* `PSHUFLW'                                (1): Section B.4.253.
+* `PSHUFW'                                 (1): Section B.4.254.
+* `PSLLx'                                  (1): Section B.4.255.
+* `PSRAx'                                  (1): Section B.4.256.
+* `PSRLx'                                  (1): Section B.4.257.
+* `PSUBSIW'                                (1): Section B.4.260.
+* `PSUBSxx'                                (1): Section B.4.259.
+* `PSUBUSx'                                (1): Section B.4.259.
+* `PSUBx'                                  (1): Section B.4.258.
+* `PSWAPD'                                 (1): Section B.4.261.
+* `PSWAPW'                                 (1): Section B.4.261.
+* `PUBLIC'                                 (1): Section 5.5.
+* `PUBLIC'                                 (2): Section 6.2.1.
+* `PUNPCKxxx'                              (1): Section B.4.262.
+* pure binary                              (1): Section 6.1.
+* `%push'                                  (1): Section 4.7.
+* `%push'                                  (2): Section 4.7.1.
+* `PUSH'                                   (1): Section B.4.263.
+* `PUSHAx'                                 (1): Section B.4.264.
+* `PUSHFx'                                 (1): Section B.4.265.
+* `PXOR'                                   (1): Section B.4.266.
+* quick start                              (1): Section 2.2.
+* `QWORD'                                  (1): Section 3.1.
+* `-r'                                     (1): Section A.3.
+* `RCL'                                    (1): Section B.4.267.
+* `RCPPS'                                  (1): Section B.4.268.
+* `RCPSS'                                  (1): Section B.4.269.
+* `RCR'                                    (1): Section B.4.267.
+* `rdf'                                    (1): Section 2.1.1.
+* `rdf'                                    (2): Section 6.9.
+* `RDMSR'                                  (1): Section B.4.270.
+* `rdoff' subdirectory                     (1): Section 1.3.2.
+* `rdoff' subdirectory                     (2): Section 6.9.
+* `RDPMC'                                  (1): Section B.4.271.
+* `RDSHR'                                  (1): Section B.4.272.
+* `RDTSC'                                  (1): Section B.4.273.
+* redirecting errors                       (1): Section 2.1.8.
+* register push                            (1): Section B.4.263.
+* relational operators                     (1): Section 4.4.4.
+* Relocatable Dynamic Object File Format   (1): Section 6.9.
+* relocations, PIC-specific                (1): Section 6.5.2.
+* removing contexts                        (1): Section 4.7.1.
+* renaming contexts                        (1): Section 4.7.4.
+* `%rep'                                   (1): Section 3.2.5.
+* `%rep'                                   (2): Section 4.5.
+* repeating                                (1): Section 3.2.5.
+* repeating                                (2): Section 4.5.
+* `%repl'                                  (1): Section 4.7.4.
+* reporting bugs                           (1): Section 10.2.
+* `RESB'                                   (1): Section 2.2.7.
+* `RESB'                                   (2): Section 3.2.
+* `RESB'                                   (3): Section 3.2.2.
+* `RESB'                                   (4): Section 3.8.
+* `RESD'                                   (1): Section 3.2.
+* `RESD'                                   (2): Section 3.2.2.
+* `RESQ'                                   (1): Section 3.2.
+* `RESQ'                                   (2): Section 3.2.2.
+* `REST'                                   (1): Section 3.2.
+* `REST'                                   (2): Section 3.2.2.
+* restricted memory references             (1): Section B.1.
+* `RESW'                                   (1): Section 3.2.
+* `RESW'                                   (2): Section 3.2.2.
+* `RET'                                    (1): Section B.4.274.
+* `RETF'                                   (1): Section B.4.274.
+* `RETN'                                   (1): Section B.4.274.
+* `ROL'                                    (1): Section B.4.275.
+* `ROR'                                    (1): Section B.4.275.
+* `%rotate'                                (1): Section 4.3.6.
+* rotating macro parameters                (1): Section 4.3.6.
+* `RPL'                                    (1): Section B.4.13.
+* `RSDC'                                   (1): Section B.4.276.
+* `RSLDT'                                  (1): Section B.4.277.
+* `RSM'                                    (1): Section B.4.278.
+* `RSQRTPS'                                (1): Section B.4.279.
+* `RSQRTSS'                                (1): Section B.4.280.
+* `RSTS'                                   (1): Section B.4.281.
+* `-s' option                              (1): Section 2.1.9.
+* `-s' option                              (2): Section A.3.2.
+* `SAHF'                                   (1): Section B.4.282.
+* `SAL'                                    (1): Section B.4.283.
+* `SALC'                                   (1): Section B.4.284.
+* `SAR'                                    (1): Section B.4.283.
+* `SBB'                                    (1): Section B.4.285.
+* `SCASB'                                  (1): Section B.4.286.
+* `SCASD'                                  (1): Section B.4.286.
+* `SCASW'                                  (1): Section B.4.286.
+* searching for include files              (1): Section 4.6.
+* `__SECT__'                               (1): Section 5.2.1.
+* `__SECT__'                               (2): Section 5.3.
+* `SECTION'                                (1): Section 5.2.
+* `SECTION', `elf' extensions to           (1): Section 6.5.1.
+* `SECTION', `win32' extensions to         (1): Section 6.3.1.
+* section alignment, in `bin'              (1): Section 6.1.2.
+* section alignment, in `elf'              (1): Section 6.5.1.
+* section alignment, in `obj'              (1): Section 6.2.1.
+* section alignment, in `win32'            (1): Section 6.3.1.
+* section, bin extensions to               (1): Section 6.1.2.
+* `SEG'                                    (1): Section 3.5.7.
+* `SEG'                                    (2): Section 3.6.
+* `SEG'                                    (3): Section 6.2.
+* `SEGMENT'                                (1): Section 5.2.
+* `SEGMENT', `elf' extensions to           (1): Section 6.2.1.
+* segment address                          (1): Section 3.5.7.
+* segment address                          (2): Section 3.6.
+* segment alignment, in `bin'              (1): Section 6.1.2.
+* segment alignment, in `obj'              (1): Section 6.2.1.
+* segment names, Borland Pascal            (1): Section 7.5.2.
+* segment override                         (1): Section 2.2.4.
+* segment override                         (2): Section 3.1.
+* segment registers                        (1): Section B.2.1.
+* segments                                 (1): Section 3.6.
+* segments, groups of                      (1): Section 6.2.2.
+* separator character                      (1): Section 2.1.22.
+* `SETcc'                                  (1): Section B.4.287.
+* `SFENCE'                                 (1): Section B.4.288.
+* `SGDT'                                   (1): Section B.4.289.
+* shared libraries                         (1): Section 6.7.
+* shared libraries                         (2): Section 8.2.
+* shared library                           (1): Section 6.5.3.
+* `shift' command                          (1): Section 4.3.6.
+* `SHL'                                    (1): Section B.4.290.
+* `SHLD'                                   (1): Section B.4.291.
+* `SHR'                                    (1): Section B.4.290.
+* `SHRD'                                   (1): Section B.4.291.
+* `SHUFPD'                                 (1): Section B.4.292.
+* `SHUFPS'                                 (1): Section B.4.293.
+* SIB byte                                 (1): Section B.2.
+* SIB byte                                 (2): Section B.2.5.
+* `SIDT'                                   (1): Section B.4.289.
+* signed division                          (1): Section 3.5.6.
+* signed modulo                            (1): Section 3.5.6.
+* single-line macros                       (1): Section 4.1.
+* size, of symbols                         (1): Section 6.5.3.
+* `SLDT'                                   (1): Section B.4.289.
+* `SMI'                                    (1): Section B.4.294.
+* `SMINT'                                  (1): Section B.4.295.
+* `SMINTOLD'                               (1): Section B.4.295.
+* `SMSW'                                   (1): Section B.4.296.
+* Solaris x86                              (1): Section 6.5.
+* `-soname'                                (1): Section 8.2.6.
+* sound                                    (1): Section 3.2.3.
+* source code                              (1): Section 1.3.1.
+* source-listing file                      (1): Section 2.1.3.
+* `SQRTPD'                                 (1): Section B.4.297.
+* `SQRTPS'                                 (1): Section B.4.298.
+* `SQRTSD'                                 (1): Section B.4.299.
+* `SQRTSS'                                 (1): Section B.4.300.
+* square brackets                          (1): Section 2.2.2.
+* square brackets                          (2): Section 3.3.
+* sse condition predicates                 (1): Section B.2.3.
+* `STACK'                                  (1): Section 6.2.1.
+* `stack frame'                            (1): Section B.4.65.
+* `%stacksize'                             (1): Section 4.9.2.
+* standard macros                          (1): Section 4.8.
+* standardised section names               (1): Section 5.2.
+* standardised section names               (2): Section 6.3.1.
+* standardised section names               (3): Section 6.5.1.
+* standardised section names               (4): Section 6.6.
+* standardised section names               (5): Section 6.7.
+* standardised section names               (6): Section 6.8.
+* standardised section names               (7): Section 6.9.
+* `..start'                                (1): Section 6.2.6.
+* `..start'                                (2): Section 7.1.1.
+* `start='                                 (1): Section 6.1.3.
+* status flags                             (1): Section B.2.4.
+* `STC'                                    (1): Section B.4.301.
+* `STD'                                    (1): Section B.4.301.
+* `stderr'                                 (1): Section 2.1.8.
+* `stdout'                                 (1): Section 2.1.9.
+* `STI'                                    (1): Section B.4.301.
+* `STMXCSR'                                (1): Section B.4.302.
+* `STOSB'                                  (1): Section B.4.303.
+* `STOSD'                                  (1): Section B.4.303.
+* `STOSW'                                  (1): Section B.4.303.
+* `STR'                                    (1): Section B.4.304.
+* `STRICT'                                 (1): Section 3.7.
+* string constant                          (1): Section 3.2.1.
+* string handling in macros                (1): Section 4.2.
+* string length                            (1): Section 4.2.1.
+* `%strlen'                                (1): Section 4.2.
+* `%strlen'                                (2): Section 4.2.1.
+* `STRUC'                                  (1): Section 4.8.5.
+* `STRUC'                                  (2): Section 5.3.
+* `STRUC'                                  (3): Section 7.4.4.
+* `STRUC'                                  (4): Section 8.1.3.
+* stub preprocessor                        (1): Section 2.1.15.
+* `SUB'                                    (1): Section B.4.305.
+* `SUBPD'                                  (1): Section B.4.306.
+* `SUBPS'                                  (1): Section B.4.307.
+* `SUBSD'                                  (1): Section B.4.308.
+* `SUBSS'                                  (1): Section B.4.309.
+* `%substr'                                (1): Section 4.2.
+* `%substr'                                (2): Section 4.2.2.
+* sub-strings                              (1): Section 4.2.2.
+* subtraction                              (1): Section 3.5.5.
+* suppressible warning                     (1): Section 2.1.18.
+* suppressing preprocessing                (1): Section 2.1.15.
+* `SVDC'                                   (1): Section B.4.310.
+* `SVLDT'                                  (1): Section B.4.311.
+* `SVTS'                                   (1): Section B.4.312.
+* switching between sections               (1): Section 5.2.
+* `..sym'                                  (1): Section 6.5.2.
+* symbol sizes, specifying                 (1): Section 6.5.3.
+* symbol types, specifying                 (1): Section 6.5.3.
+* symbols, exporting from DLLs             (1): Section 6.2.5.
+* symbols, importing from DLLs             (1): Section 6.2.4.
+* `synchronisation'                        (1): Section A.3.2.
+* `.SYS'                                   (1): Section 6.1.
+* `.SYS'                                   (2): Section 7.3.
+* `SYSCALL'                                (1): Section B.4.313.
+* `SYSENTER'                               (1): Section B.4.314.
+* `SYSEXIT'                                (1): Section B.4.315.
+* `SYSRET'                                 (1): Section B.4.316.
+* `-t'                                     (1): Section 2.1.17.
+* `TASM'                                   (1): Section 1.1.1.
+* `TASM'                                   (2): Section 2.1.17.
+* tasm                                     (1): Section 2.2.
+* tasm                                     (2): Section 6.2.
+* tasm compatible preprocessor directives  (1): Section 4.9.
+* `TBYTE'                                  (1): Section 2.2.7.
+* `TEST'                                   (1): Section B.4.317.
+* `test' subdirectory                      (1): Section 7.1.1.
+* test registers                           (1): Section B.2.1.
+* testing, arbitrary numeric expressions   (1): Section 4.4.4.
+* testing, context stack                   (1): Section 4.4.3.
+* testing, exact text identity             (1): Section 4.4.5.
+* testing, multi-line macro existence      (1): Section 4.4.2.
+* testing, single-line macro existence     (1): Section 4.4.1.
+* testing, token types                     (1): Section 4.4.6.
+* `.text'                                  (1): Section 6.5.1.
+* `.text'                                  (2): Section 6.6.
+* `.text'                                  (3): Section 6.7.
+* `.text'                                  (4): Section 6.8.
+* `.text'                                  (5): Section 6.9.
+* `_TEXT'                                  (1): Section 7.4.2.
+* `TIMES'                                  (1): Section 3.2.
+* `TIMES'                                  (2): Section 3.2.5.
+* `TIMES'                                  (3): Section 3.8.
+* `TIMES'                                  (4): Section 10.1.3.
+* `TIMES'                                  (5): Section 10.1.4.
+* `TLINK'                                  (1): Section 7.2.2.
+* trailing colon                           (1): Section 3.1.
+* two-pass assembler                       (1): Section 3.8.
+* `TWORD'                                  (1): Section 2.2.7.
+* `TWORD'                                  (2): Section 3.1.
+* type, of symbols                         (1): Section 6.5.3.
+* `-U' option                              (1): Section 2.1.13.
+* `-u' option                              (1): Section 2.1.13.
+* `-u' option                              (2): Section A.3.
+* `UCOMISD'                                (1): Section B.4.318.
+* `UCOMISS'                                (1): Section B.4.319.
+* `UD0'                                    (1): Section B.4.320.
+* `UD1'                                    (1): Section B.4.320.
+* `UD2'                                    (1): Section B.4.320.
+* `UMOV'                                   (1): Section B.4.321.
+* unary operators                          (1): Section 3.5.7.
+* `%undef'                                 (1): Section 2.1.13.
+* `%undef'                                 (2): Section 4.1.4.
+* undefining macros                        (1): Section 2.1.13.
+* underscore, in C symbols                 (1): Section 7.4.1.
+* uninitialised                            (1): Section 3.2.
+* uninitialised                            (2): Section 3.2.2.
+* uninitialised storage                    (1): Section 2.2.7.
+* Unix                                     (1): Section 1.3.2.
+* Unix, SCO                                (1): Section 6.5.
+* Unix, source archive                     (1): Section 1.3.2.
+* Unix, System V                           (1): Section 6.5.
+* UnixWare                                 (1): Section 6.5.
+* `UNPCKHPD'                               (1): Section B.4.322.
+* `UNPCKHPS'                               (1): Section B.4.323.
+* `UNPCKLPD'                               (1): Section B.4.324.
+* `UNPCKLPS'                               (1): Section B.4.325.
+* unrolled loops                           (1): Section 3.2.5.
+* unsigned division                        (1): Section 3.5.6.
+* unsigned modulo                          (1): Section 3.5.6.
+* `UPPERCASE'                              (1): Section 2.2.1.
+* `UPPERCASE'                              (2): Section 6.2.3.
+* `USE16'                                  (1): Section 5.1.1.
+* `USE16'                                  (2): Section 6.2.1.
+* `USE32'                                  (1): Section 5.1.1.
+* `USE32'                                  (2): Section 6.2.1.
+* user-defined errors                      (1): Section 4.4.7.
+* user-level assembler directives          (1): Section 4.8.
+* user-level directives                    (1): Chapter 5.
+* `-v' option                              (1): Section 2.1.19.
+* VAL                                      (1): Section 7.1.1.
+* valid characters                         (1): Section 3.1.
+* variable types                           (1): Section 2.2.3.
+* `VERR'                                   (1): Section B.4.326.
+* version                                  (1): Section 2.1.19.
+* version number of NASM                   (1): Section 4.8.1.
+* `VERW'                                   (1): Section B.4.326.
+* `vfollows='                              (1): Section 6.1.3.
+* Visual C++                               (1): Section 6.3.
+* `vstart='                                (1): Section 6.1.3.
+* `-w' option                              (1): Section 2.1.18.
+* `WAIT'                                   (1): Section B.4.327.
+* warnings                                 (1): Section 2.1.18.
+* `[warning +warning-name]'                (1): Section 2.1.18.
+* `[warning -warning-name]'                (1): Section 2.1.18.
+* `WBINVD'                                 (1): Section B.4.328.
+* Win32                                    (1): Section 1.3.1.
+* Win32                                    (2): Section 2.1.1.
+* Win32                                    (3): Section 6.2.
+* Win32                                    (4): Section 6.3.
+* Win32                                    (5): Chapter 8.
+* Windows                                  (1): Section 7.1.
+* Windows 95                               (1): Section 1.3.1.
+* Windows NT                               (1): Section 1.3.1.
+* `write'                                  (1): Section 6.5.1.
+* writing operating systems                (1): Section 9.1.
+* `WRMSR'                                  (1): Section B.4.329.
+* `WRSHR'                                  (1): Section B.4.330.
+* `WRT'                                    (1): Section 3.6.
+* `WRT'                                    (2): Section 6.2.
+* `WRT'                                    (3): Section 6.5.2.
+* `WRT'                                    (4): Section 6.7.
+* `WRT ..got'                              (1): Section 8.2.3.
+* `WRT ..gotoff'                           (1): Section 8.2.2.
+* `WRT ..gotpc'                            (1): Section 8.2.1.
+* `WRT ..plt'                              (1): Section 8.2.5.
+* `WRT ..sym'                              (1): Section 8.2.4.
+* WWW page                                 (1): Section 1.2.
+* `www.cpan.org'                           (1): Section 1.3.1.
+* `www.delorie.com'                        (1): Section 7.1.1.
+* `www.pcorner.com'                        (1): Section 7.1.1.
+* `-X' option                              (1): Section 2.1.7.
+* `XADD'                                   (1): Section B.4.331.
+* `XBTS'                                   (1): Section B.4.332.
+* `XCHG'                                   (1): Section B.4.333.
+* `%xdefine'                               (1): Section 4.1.2.
+* `x2ftp.oulu.fi'                          (1): Section 7.1.1.
+* `%xidefine'                              (1): Section 4.1.2.
+* `XLATB'                                  (1): Section B.4.334.
+* `XOR'                                    (1): Section B.4.335.
+* `XORPD'                                  (1): Section B.4.336.
+* `XORPS'                                  (1): Section B.4.337.
+* `-y' option                              (1): Section 2.1.20.
+
+

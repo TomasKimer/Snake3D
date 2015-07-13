@@ -1,0 +1,44 @@
+//
+//  Project:     Snake 3D - Advanced Assembly Languages project, FIT BUT 2009
+//  Author:      Tomas Kimer <tomas.kimer@gmail.com> <tomaskimer.com>
+//  Date:        2009/12/18
+//  Description: Resource script.
+// 
+
+#define IDI_MAINICON       101   // large icon id
+#define IDI_MAINICON_SMALL 102   // small icon id
+
+IDI_MAINICON       ICON DISCARDABLE "Snake3D.ico"
+IDI_MAINICON_SMALL ICON DISCARDABLE "Snake3D_small.ico"
+
+
+// version info
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x17L
+ FILEFLAGS 0x0L
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040504b0"
+        BEGIN
+            VALUE "CompanyName", "Tomas Kimer <tomaskimer.com>"
+            VALUE "FileDescription", "Advanced Assembly Languages project, FIT BUT 2009"
+            VALUE "FileVersion", "1, 0, 0, 0"
+            VALUE "InternalName", "Snake3D"
+            VALUE "LegalCopyright", "© 2009 Tomas Kimer <tomaskimer.com>"
+//          VALUE "LegalTrademarks", "Snake 3D"
+            VALUE "OriginalFilename", "Snake3D.exe"
+            VALUE "ProductName", "Snake 3D"
+            VALUE "ProductVersion", "1, 0, 0, 0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x405, 1200
+    END
+END

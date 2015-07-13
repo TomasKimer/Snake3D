@@ -1,0 +1,3 @@
+#include <Res\WinDlgMnu.rc>
+#include <Res\WinDlgDlg.rc>
+#include "Res/WinDlgVer.rc"
